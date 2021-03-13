@@ -58,7 +58,7 @@ $(function() {
 	});
 
 	// 로그아웃
-	$("#loginBtn").on("click",function() {
+	$("#nav-logoutBtn").on("click",function() {
 		// 회원가입 버튼과 로그인 버튼 살리기
 		document.querySelector("#nav-signupBtn")
 				.setAttribute("style", "display: ");

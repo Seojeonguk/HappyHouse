@@ -6,6 +6,9 @@
 	margin-top: 50px;
 	background: url(../img/houseimg.jpg) no-repeat center center !important;
 }
+.housefooterImg{
+	background: url(../img/house_2.jpg) no-repeat center center !important;
+}
 .main-title {
 	margin-bottom: 10px !important;
 }
@@ -22,4 +25,8 @@
 	width: 100px;
     text-align: center;
     font-size: 10pt;
+}
+
+select {
+	height: 30px;
 }

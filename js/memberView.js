@@ -1,32 +1,15 @@
 $(function() {
 
-	var id = localStorage.getItem('id');
-	var pw = localStorage.getItem('pw');
-	var name = localStorage.getItem('name');
-	var addr = localStorage.getItem('addr');
-	var tel = localStorage.getItem('tel');
-
-	var idArr = JSON.parse(id);
-	var pwArr = JSON.parse(pw);
-	var nameArr = JSON.parse(name);
-	var addrArr = JSON.parse(addr);
-	var telArr = JSON.parse(tel);
-
-	var idx;
 	var myID = localStorage.getItem('loginID');
-	$.each(idArr, function(index) { // id 배열 돌면서 현재 loginID 랑 같은 아이디의 인덱스값 받아서
-		if (idArr[index] === myID) {
-			idx = index;
-		}
-	});
+	var data = JSON.parse(localStorage.getItem(myID));
 	
-	// 그 인덱스에 해당하는 나머지 배열의 정보를 불러서
+	// 로그인 한 아이디에 해당하는 배열의 정보를 불러서
 	// 각 #id에 맞는 div에 텍스트로 뿌려줌
-	$("#id").text(idArr[idx]);
-	$("#pw").text(pwArr[idx]);
-	$("#name").text(nameArr[idx]);
-	$("#addr").text(addrArr[idx]);
-	$("#tel").text(telArr[idx]);
+	$("#id").text(myID);
+	$("#pw").text(data[0]);
+	$("#name").text(data[1]);
+	$("#addr").text(data[2]);
+	$("#tel").text(data[3]);
 
 	// 확인버튼
 	$("#btnClose").on("click", function() {
@@ -42,23 +25,26 @@ $(function() {
 	$("#btnDelete").on("click", function() {
 		var res = confirm("탈퇴하시겠습니까?");
 		if(res) { //확인
-			var indx;
-			$.each(idArr, function(index) { // 배열을 돌면서
-				if(idArr[index] === loginID) { // 로그인한 아이디와 같다면
-					indx = index;
-					
-				}
-			});
-			localStorage.removeItem('idArr'+[idx]);
-			localStorage.removeItem('pwArr'+[idx]);
-			localStorage.removeItem('nameArr[idx]');
-			localStorage.removeItem('addrArr[idx]');
-			localStorage.removeItem('telArr[idx]');
-//			localStorage.removeItem('loginID');
-			
+			localStorage.removeItem(myID);
+			localStorage.removeItem('loginID');
 			alert("탈퇴 되었습니다. 감사합니다.")
 		}
 		
 		window.location.href="index.html";
+	});
+	
+	// 로그아웃
+	$("#nav-logoutBtn").on("click",function() {
+		localStorage.removeItem('loginID');
+		
+		// 회원가입 버튼과 로그인 버튼 살리기
+		document.querySelector("#nav-signupBtn")
+				.setAttribute("style", "display: ");
+		document.querySelector("#nav-loginBtn").setAttribute("style", "display: ");
+		// 로그아웃 버튼과 회원정보 버튼 없애기
+		document.querySelector("#nav-logoutBtn").setAttribute("style",
+				"display: none ");
+		document.querySelector("#nav-meminfoBtn").setAttribute("style",
+				"display: none ");
 	});
 });

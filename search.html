@@ -57,11 +57,12 @@
             </div>
         </header>
         <div class="container">
+            <div id="loading-page">데이터 로딩중...</div>
             <div class="option text-center mt-2 mb-2">
                 <select id="category" name="category">
                     <option value="전체">전체</option>
                     <option value="아파트">아파트</option>
-                    <option value="연립다세대">연립다세</option>
+                    <option value="연립다세대">다세대</option>
                 </select>
                 <select id="si" name="si">
                     <option name="si_init" value="">시/도</option>
@@ -71,7 +72,7 @@
                 <input type="button" id="search-btn" value="검색"/>
             </div>
             <div class="content row">
-                <div class="content-left">
+                <div class="content-left" id="content-left">
                     <div class="content-left-title">
                         <h2>거래정보</h2>
                     </div>

@@ -38,6 +38,11 @@
 .content > .content-left {
 	width: 30%;
 	overflow: auto;
+	margin-right: 10px;
+}
+
+.content > .content-left::-webkit-scrollbar {
+	display: none;
 }
 
 .content > .content-right {
@@ -45,9 +50,31 @@
 }
 
 .content-left .item{
-	border-top: 1px solid rgba(0,0,0,0.2);
+	border: 1px solid rgba(0,0,0,0.2);
 }
 
 .content-left p {
 	margin-bottom: 0;
+	padding: 8px;
+}
+
+.item {
+	font-size: 0.8em;
+}
+
+.item-name {
+	font-weight: bold;
+	font-size: 1.8em;
+}
+
+
+#loading-page {
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.1);
+	display: none;
+	font-size: 8em;
+	position: absolute;
+	z-index: 1;
+	text-align: center;
 }
