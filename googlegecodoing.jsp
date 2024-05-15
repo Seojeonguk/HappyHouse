@@ -24,7 +24,7 @@ public String getTagValue(String tag, Element eElement) {
 
 	StringBuilder urlBuilder = new StringBuilder("https://maps.googleapis.com/maps/api/geocode/xml"); /*URL*/
 	urlBuilder.append("?" + URLEncoder.encode("address","UTF-8") + "=" + si + "+" + gun + "+" + gu + "+" + item); /*Address*/
-	urlBuilder.append("&" + URLEncoder.encode("key","UTF-8") + "=" + URLDecoder.decode("AIzaSyC6Us_KXXGQzpkFbsSJmCWtHOTuR-4mM4M", "UTF-8")); /*Service Key*/
+	urlBuilder.append("&" + URLEncoder.encode("key", "UTF-8") + "=" + URLDecoder.decode("AIzaSyDmn5MgBYwWy8SL1iT-i-feOEs0TBH1i0s", "UTF-8")); /*Service Key*/
 	urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=1000");
 	
 
@@ -35,7 +35,7 @@ public String getTagValue(String tag, Element eElement) {
 	DocumentBuilder dBuilder = dbFactoty.newDocumentBuilder();
 	Document doc = dBuilder.parse(url);
 
-	
+
 	doc.getDocumentElement().normalize();
 	
 	NodeList nList = doc.getElementsByTagName("location");
