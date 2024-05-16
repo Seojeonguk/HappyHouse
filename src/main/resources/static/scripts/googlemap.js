@@ -1,6 +1,6 @@
 let map;
 
-const loadGoogleMap = (key) => {
+function loadGoogleMap(key) {
     let script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap`;
     script.async = true;
@@ -8,10 +8,13 @@ const loadGoogleMap = (key) => {
     document.head.appendChild(script);
 }
 
-function initMap(lat = 35.1595454, lng = 126.8526012) {
+async function initMap(lat = 35.1595454, lng = 126.8526012) {
     lat *= 1;
     lng *= 1;
-    map = new google.maps.Map(document.getElementById("map"), {
+
+    const {Map} = await google.maps.importLibrary("maps");
+
+    map = new Map(document.getElementById("map"), {
         center: {
             lat: lat,
             lng: lng
@@ -19,6 +22,7 @@ function initMap(lat = 35.1595454, lng = 126.8526012) {
         zoom: 15
     });
 }
+
 function mapMarking(lat, lng, item_list, color) {
     lat *= 1;
     lng *= 1;
@@ -48,19 +52,21 @@ function mapMarking(lat, lng, item_list, color) {
         map,
         icon: color == 1 ? blueMarker : redMarker
     });
-    attch_message(marker, item_list,color);
+    attch_message(marker, item_list, color);
 }
-function attch_message(marker, item_list,color) {
-	var input_btn = '<input type="button" onclick="javascript:detail_btn($(this));" color="'+color+'" id="' + item_list[3] +'" title="' + item_list[3] +'"value="자세히보기"/>';
+
+function attch_message(marker, item_list, color) {
+    var input_btn = '<input type="button" onclick="javascript:detail_btn($(this));" color="' + color + '" id="' + item_list[3] + '" title="' + item_list[3] + '"value="자세히보기"/>';
     var infowindow = new google.maps.InfoWindow({
         content: item_list[3] + "<br/>가격 : " + item_list[1] + "<br/>토지면적 : " + item_list[2] + String.fromCodePoint(0x33A0) + "<br/>" + input_btn,
         size: new google.maps.Size(50, 50)
-	});
-	
+    });
+
     google.maps.event.addListener(marker, 'click', function () { // 이벤트 등록
         infowindow.open(map, marker);
-	});
+    });
 }
+
 function google_geocoding(si, gun, gu, item_list, color) {
     var parameter = "si=" + si + "&gun=" + gun + "&gu=" + gu + "&item=" + item_list[0];
     $.ajax({
@@ -78,9 +84,9 @@ function google_geocoding(si, gun, gu, item_list, color) {
 }
 
 function detail_btn(item) {
-	if(item.attr('color')==0) {
-		detail_apart_search(item.attr('title'));
-	} else if(item.attr('color')==1) {
-		detail_house_search(item.attr('title'));
-	}
+    if (item.attr('color') == 0) {
+        detail_apart_search(item.attr('title'));
+    } else if (item.attr('color') == 1) {
+        detail_house_search(item.attr('title'));
+    }
 }
