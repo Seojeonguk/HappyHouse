@@ -1,6 +1,8 @@
 let map;
 
-function loadGoogleMap(key) {
+async function loadGoogleMap() {
+    const key = await getGoogleMapApiKey();
+
     let script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap`;
     script.async = true;
