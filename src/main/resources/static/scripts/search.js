@@ -77,3 +77,8 @@ $(function() {
 		load_dong_data();
 	});
 });
+
+$(document).ready(async function () {
+	const googleMapApiKey = await getGoogleMapApiKey();
+	loadGoogleMap(googleMapApiKey);
+})

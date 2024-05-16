@@ -56,9 +56,9 @@ $(document).ready(function () {
     $("select[name='dong']").change(function () {
         $("#searching-form").submit();
     });
-
-    fetch("/api/getGoogleApiKey", {method: "POST"})
-        .then(res => res.text())
-        .then(data => console.log(data))
-        .catch(err => console.error(err));
 });
+
+$(document).ready(async function () {
+    const googleMapApiKey = await getGoogleMapApiKey();
+    loadGoogleMap(googleMapApiKey);
+})
