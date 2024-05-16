@@ -1,0 +1,32 @@
+#map {
+	height: 500px;
+}
+
+.houseImg {
+	margin-top: 50px;
+	background: url(../../images/houseimg.jpg) no-repeat center center !important;
+}
+.housefooterImg{
+	background: url(../../images/house_2.jpg) no-repeat center center !important;
+}
+.main-title {
+	margin-bottom: 10px !important;
+}
+.main-sub {
+	
+}
+.main-hr {
+	border-color: white;
+}
+.mapBox{
+	margin-bottom: 60px;
+}
+.navBtn {
+	width: 100px;
+    text-align: center;
+    font-size: 10pt;
+}
+
+select {
+	height: 30px;
+}
