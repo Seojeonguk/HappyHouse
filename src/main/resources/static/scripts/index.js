@@ -58,7 +58,8 @@ $(document).ready(function () {
     });
 });
 
-$(document).ready(async function () {
-    const googleMapApiKey = await getGoogleMapApiKey();
-    loadGoogleMap(googleMapApiKey);
-})
+$(document).ready(function () {
+    loadGoogleMap()
+        .then(() => console.log('success loading google map.'))
+        .catch((err) => console.error(err));
+});
