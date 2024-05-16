@@ -1,6 +1,6 @@
-package com.example.happyhouse.controller;
+package com.example.happyhouse.domain.controller;
 
-import com.example.happyhouse.service.apiKey.ApiKeyService;
+import com.example.happyhouse.domain.service.ApiKeyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
