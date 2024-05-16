@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>Happy House</title>
+
+		<!-- Jquery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+		<!-- Bootstrap core CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+		<!-- Custom fonts for this template -->
+		<link href="lib/fontawesome-free/css/all.min.css" rel="stylesheet">
+		<link href="lib/simple-line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css">
+		<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic"
+		      rel="stylesheet" type="text/css">
+
+		<!-- Custom styles for this template -->
+		<link href="styles/css/landing-page.min.css" rel="stylesheet">
+		<link href="styles/css/index.css" rel="stylesheet">
+
+		<!-- Scripts-->
+		<script src="scripts/googlemap.js"></script>
+		<script src="scripts/search_util.js"></script>
+		<script src="scripts/index.js"></script>
+		<script defer
+		        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDmn5MgBYwWy8SL1iT-i-feOEs0TBH1i0s&callback=initMap&libraries=&v=weekly"></script>
+	</head>
+	<body>
+		<!-- Navigation -->
+		<div class="header fixed-top shadow">
+			<nav class="navbar navbar-light bg-light static-top">
+				<div class="container">
+					<a class="navbar-brand" href="index.html">
+						<i class="fa fa-home pr-2"></i>
+						Happy House
+					</a>
+					<div class="btn-zone">
+						<div class="btn-group">
+							<a class="btn btn-sm btn-primary mr-2 navBtn" id="nav-signupBtn" href="./views/signupForm.html">
+								<i class="fa fa-user pr-2"></i>
+								Sign Up
+							</a>
+						</div>
+						<div class="btn-group">
+							<a class="btn btn-sm btn-primary navBtn" id="nav-loginBtn" href="./views/login.html">
+								<i class="fa fa-lock pr-2"></i>
+								Login
+							</a>
+						</div>
+						<div class="btn-group">
+							<a class="btn btn-sm btn-primary navBtn" id="nav-logoutBtn" href="./views/login.html"
+							   style="display: none">
+								<i class="fa fa-unlock pr-2"></i>
+								Logout
+							</a>
+						</div>
+						<div class="btn-group">
+							<a class="btn btn-sm btn-primary mr-2 navBtn" id="nav-meminfoBtn" href="./views/memberView.html"
+							   style="display: none">
+								<i class="fa fa-user pr-2"></i>
+								회원정보
+							</a>
+						</div>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<!-- Masthead -->
+		<header class="masthead text-white text-center houseImg">
+			<div class="overlay"></div>
+			<div class="container">
+				<div class="row">
+					<div class="col-xl-9 mx-auto">
+						<h1 class="mb-5 main-title">HAPPY HOUSE</h1>
+						<hr class="main-hr">
+						<h5 class="mb-5 main-sub">즐거운 우리집</h5>
+					</div>
+					<div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
+						<form id="searching-form" name="searching-form" method="GET" action="./views/search.html">
+							<div class="">
+								<div class="option text-center mt-2 mb-2">
+									<select id="category" name="category">
+										<option value="전체">전체</option>
+										<option value="아파트">아파트</option>
+										<option value="연립다세대">연립다세</option>
+									</select>
+									<select id="si" name="si">
+										<option value="">시/도</option>
+									</select>
+									<select id="gu" name="gu"></select>
+									<select id="dong" name="dong"></select>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</header>
+		<section class="showcase">
+			<div class="container mapBox mt-5">
+				<div id="map"></div>
+			</div>
+		</section>
+		<!-- Testimonials -->
+		<section class="testimonials text-center bg-light">
+			<div class="container">
+				<h2 class="mb-5">Happy House에서 제공하는 서비스는...</h2>
+				<div class="row">
+					<div class="col-lg-4">
+						<div class="testimonial-item mx-auto mb-5 mb-lg-0">
+							<img class="img-fluid rounded-circle mb-3" src="images/apartment.jpg" alt="">
+							<h5>주택 실거래가 정보 수집</h5>
+							<p class="font-weight-light mb-0">"국토교통부 : 실시간 실거래가를 얻어와 화면에 출력."</p>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="testimonial-item mx-auto mb-5 mb-lg-0">
+							<img class="img-fluid rounded-circle mb-3" src="images/house_1.jpg" alt="">
+							<h5>주택 실거래가 검색</h5>
+							<p class="font-weight-light mb-0">"주택 실거래가 정보를 원하는 검색 정보에 따라 검색 결과 데이터 제공."</p>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="testimonial-item mx-auto mb-5 mb-lg-0">
+							<img class="img-fluid rounded-circle mb-3" src="images/purchase.jpg" alt="">
+							<h5>회원 가입 서비스</h5>
+							<p class="font-weight-light mb-0">"로그인과 회원정보 조회, 수정 가능!"</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- Call to Action -->
+		<section class="call-to-action text-white text-center housefooterImg">
+			<div class="overlay"></div>
+			<div class="container">
+				<div class="row">
+					<div class="col-xl-9 mx-auto">
+						<h1 class="mb-5 main-title">지금 바로 원하는 주택 정보를 검색해보세요!</h1>
+						<h5 class="mb-5 main-sub">회원이 되면 더 많은 서비스를 제공받을 수 있습니다.</h5>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- Footer -->
+		<footer class="footer bg-light">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-6 h-100 text-center text-lg-left my-auto">
+						<ul class="list-inline mb-2">
+							<li class="list-inline-item">
+								<a href="#">About</a>
+							</li>
+							<li class="list-inline-item">&sdot;</li>
+							<li class="list-inline-item">
+								<a href="#">Contact</a>
+							</li>
+							<li class="list-inline-item">&sdot;</li>
+							<li class="list-inline-item">
+								<a href="#">Terms of Use</a>
+							</li>
+							<li class="list-inline-item">&sdot;</li>
+							<li class="list-inline-item">
+								<a href="#">Privacy Policy</a>
+							</li>
+						</ul>
+						<p class="text-muted small mb-4 mb-lg-0">&copy; 2021.03.12 서정욱 윤소영 PairPJT.</p>
+					</div>
+					<div class="col-lg-6 h-100 text-center text-lg-right my-auto">
+						<ul class="list-inline mb-0">
+							<li class="list-inline-item mr-3">
+								<a href="#">
+									<i class="fab fa-facebook fa-2x fa-fw"></i>
+								</a>
+							</li>
+							<li class="list-inline-item mr-3">
+								<a href="#">
+									<i class="fab fa-twitter-square fa-2x fa-fw"></i>
+								</a>
+							</li>
+							<li class="list-inline-item">
+								<a href="#">
+									<i class="fab fa-instagram fa-2x fa-fw"></i>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</footer>
+	</body>
+</html>
