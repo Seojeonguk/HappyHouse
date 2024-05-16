@@ -1,7 +1,6 @@
 header.masthead {
   position: relative;
-  background-color: $gray-800;
-  background: url('../../HappyHouse/src/main/resources/static/images/bg-masthead.jpg') no-repeat center center;
+  background: $gray-800 url('../../images/bg-masthead.jpg') no-repeat center center;
   @include background-cover;
   padding-top: 8rem;
   padding-bottom: 8rem;
