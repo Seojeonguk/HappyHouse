@@ -1,4 +1,4 @@
-package com.example.happyhouse.service.apiKey;
+package com.example.happyhouse.domain.service;
 
 public interface ApiKeyService {
     String provideGoogleMapApiKey();
