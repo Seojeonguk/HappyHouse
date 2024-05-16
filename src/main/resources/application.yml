@@ -3,7 +3,11 @@ spring:
     name: HappyHouse
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+<<<<<<< HEAD
     url: jdbc:mysql://127.0.0.1:3306/happyHouse
+=======
+    url: jdbc:mysql://127.0.0.1:3306/happyhouse
+>>>>>>> 37fa727 (Update spring version)
     username: root
     password: pwd0127!!
 
@@ -11,6 +15,7 @@ spring:
     open-in-view: false
     show-sql: true
     hibernate:
+<<<<<<< HEAD
       ddl-auto: update
 
 external:
@@ -32,3 +37,6 @@ external:
     house-trade:
       endpoint:
         "http://openapi.molit.go.kr:8081/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcRHTrade"
+=======
+      ddl-auto: create
+>>>>>>> 37fa727 (Update spring version)
