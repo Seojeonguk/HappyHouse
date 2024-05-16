@@ -1,4 +1,13 @@
 let map;
+
+const loadGoogleMap = (key) => {
+    let script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap`;
+    script.async = true;
+
+    document.head.appendChild(script);
+}
+
 function initMap(lat = 35.1595454, lng = 126.8526012) {
     lat *= 1;
     lng *= 1;
