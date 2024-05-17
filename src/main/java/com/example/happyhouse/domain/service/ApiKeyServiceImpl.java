@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApiKeyServiceImpl implements ApiKeyService {
 
-    @Value("${google.api-key}")
+    @Value("${external.google.key}")
     private String googleMapApiKey;
 
     @Override
