@@ -1,5 +1,5 @@
 function getGoogleMapApiKey() {
-    return fetch("/api/getGoogleApiKey", {method: "POST"})
+    return fetch("/api/third/getGoogleApiKey", {method: "POST"})
         .then(res => res.text());
 }
 
