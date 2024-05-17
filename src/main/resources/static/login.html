@@ -1,39 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 	<head>
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta http-equiv="X-UA-Compatible" content="ie=edge">
-		<title>Happy House | 매물 검색</title>
-		<!-- Jquery -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-		<!-- bootstrap -->
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<title>Happy House | 로그인</title>
+
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-		<!-- Custom JS-->
-		<script src="../scripts/fetch.js"></script>
-		<script src="../scripts/googlemap.js"></script>
-		<link href="../styles/css/search.css" rel="stylesheet">
-		<script src="../scripts/search_util.js"></script>
-		<script src="../scripts/search.js"></script>
-		<!-- Custom CSS -->
-		<!-- <link href="./css/index.css" rel="stylesheet"> -->
-		<link href="../lib/fontawesome-free/css/all.min.css" rel="stylesheet">
-		<link href="../lib/simple-line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css">
-		<link href="../styles/css/landing-page.min.css" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+		<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR&display=swap" rel="stylesheet">
+
+		<!-- Custom fonts for this template -->
+		<link href="lib/fontawesome-free/css/all.min.css" rel="stylesheet">
+		<link href="lib/simple-line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css">
+
+		<!-- Custom styles for this template -->
+		<link href="styles/css/landing-page.min.css" rel="stylesheet">
+		<link href="styles/css/signupForm.css" rel="stylesheet">
+
+		<script type="text/javascript" src="scripts/login.js"></script>
 	</head>
+
 	<body>
 		<!-- Navigation -->
 		<div class="header fixed-top shadow">
 			<nav class="navbar navbar-light bg-light static-top">
 				<div class="container">
-					<a class="navbar-brand" href="../index.html">
+					<a class="navbar-brand" href="index.html">
 						<i class="fa fa-home pr-2"></i>
 						Happy House
 					</a>
 					<div class="btn-zone">
 						<div class="btn-group">
-							<a class="btn btn-sm btn-primary mr-2 navBtn" id="nav-sinupBtn" href="./signupForm.html">
+							<a class="btn btn-sm btn-primary mr-2 navBtn" id="nav-sinupBtn" href="signupForm.html">
 								<i class="fa fa-user pr-2"></i>
 								Sign Up
 							</a>
@@ -48,41 +49,35 @@
 				</div>
 			</nav>
 		</div>
-		<!-- Masthead -->
-		<header class="masthead text-white text-center houseImg">
+		<!-- Call to Action -->
+		<section class="call-to-action text-white text-center houseImg">
 			<div class="overlay"></div>
 			<div class="container">
 				<div class="row">
 					<div class="col-xl-9 mx-auto">
-						<h1 class="mb-5 main-title">HAPPY HOUSE</h1>
-						<hr class="main-hr">
-						<h5 class="mb-5 main-sub">즐거운 우리집</h5>
+						<h2 class="mb-4">Welcome, Join Us!</h2>
 					</div>
 				</div>
 			</div>
-		</header>
-		<div class="container">
-			<div id="loading-page">데이터 로딩중...</div>
-			<div class="option text-center mt-2 mb-2">
-				<select id="category" name="category">
-					<option value="전체">전체</option>
-					<option value="아파트">아파트</option>
-					<option value="연립다세대">다세대</option>
-				</select>
-				<select id="si" name="si">
-					<option name="si_init" value="">시/도</option>
-				</select>
-				<select id="gu" name="gu"></select>
-				<select id="dong" name="dong"></select>
-				<input type="button" id="search-btn" value="검색" />
-			</div>
-			<div class="content row">
-				<div class="content-left" id="content-left">
-					<div class="content-left-title">
-						<h2>거래정보</h2>
-					</div>
+		</section>
+		<div class="container loginBg mt-4 mb-7">
+			<div class="row justify-content-center">
+				<div class="col-7 signupBox">
+					<form method="post" action="scripts/signupForm.js">
+						<div class="row mb-5 justify-content-center">
+							<h2>로그인</h2>
+						</div>
+						<div class="form-group row">
+							<label for="id">아이디</label>
+							<input type="text" class="form-control" id="id" name="id">
+						</div>
+						<div class="form-group row">
+							<label for="pw">비밀번호</label>
+							<input type="password" class="form-control" id="pw" name="pw">
+						</div>
+						<input type="button" class="btn btn-primary btn-block" id="loginBtn" value="로그인">
+					</form>
 				</div>
-				<div id="map" class="content-right"></div>
 			</div>
 		</div>
 		<!-- Footer -->
@@ -107,7 +102,7 @@
 								<a href="#">Privacy Policy</a>
 							</li>
 						</ul>
-						<p class="text-muted small mb-4 mb-lg-0">&copy; 서정욱 윤소영 2021. All Rights Reserved.</p>
+						<p class="text-muted small mb-4 mb-lg-0">&copy; Your Website 2020. All Rights Reserved.</p>
 					</div>
 					<div class="col-lg-6 h-100 text-center text-lg-right my-auto">
 						<ul class="list-inline mb-0">
