@@ -8,7 +8,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -54,5 +53,9 @@ public class User {
 
     public void updatePassword(PasswordEncoder passwordEncoder) {
         this.pw = passwordEncoder.encode(pw);
+    }
+
+    public boolean matchPassword(PasswordEncoder passwordEncoder, String password) {
+        return passwordEncoder.matches(password, this.pw);
     }
 }
