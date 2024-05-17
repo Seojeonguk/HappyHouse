@@ -20,7 +20,7 @@ $(document).ready(function () {
             tel: tel
         });
 
-        fetch('http://localhost:8080/user/signUp',
+        fetch('http://localhost:8080/api/user/signUp',
             {
                 method: "POST", body: body, headers: {
                     'Content-Type': 'application/json'

@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
 
     @PostMapping("/signUp")
-    public ResponseEntity<String> signUp(@RequestBody UserRegistrationReq userRegistrationReq) throws Exception {
+    public ResponseEntity<String> signUp(@RequestBody UserRegistrationReq userRegistrationReq) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.sigunUp(userRegistrationReq));
     }
 }
