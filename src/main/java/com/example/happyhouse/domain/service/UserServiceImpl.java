@@ -5,6 +5,7 @@ import com.example.happyhouse.domain.entity.User;
 import com.example.happyhouse.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -21,6 +23,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userRegistrationReq.toEntity();
+        user.updatePassword(passwordEncoder);
         userRepository.save(user);
 
         return userRegistrationReq.getLoginId();
