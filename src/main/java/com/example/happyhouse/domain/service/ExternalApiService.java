@@ -6,4 +6,5 @@ import java.io.IOException;
 
 public interface ExternalApiService {
     GeocodingRes getGeocoding(String address) throws IOException;
+    String getGoogleApiKey();
 }

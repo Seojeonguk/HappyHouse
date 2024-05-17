@@ -62,4 +62,9 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
         return new GeocodingRes(lat, lng);
     }
+
+    @Override
+    public String getGoogleApiKey() {
+        return externalGoogleKey;
+    }
 }
