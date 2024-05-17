@@ -1,4 +1,4 @@
-package com.example.happyhouse.config;
+package com.example.happyhouse.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
