@@ -1,5 +1,6 @@
 package com.example.happyhouse.domain.controller;
 
+import com.example.happyhouse.domain.dto.request.LoginReq;
 import com.example.happyhouse.domain.dto.request.UserRegistrationReq;
 import com.example.happyhouse.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,5 +21,10 @@ public class UserController {
     @PostMapping("/signUp")
     public ResponseEntity<String> signUp(@RequestBody UserRegistrationReq userRegistrationReq) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.sigunUp(userRegistrationReq));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginReq loginReq) {
+        return ResponseEntity.ok().body(userService.login(loginReq));
     }
 }
