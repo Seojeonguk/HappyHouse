@@ -17,8 +17,16 @@ $(function () {
 
         $('.content-left').children().not('.content-left-title').remove();
 
-        const geocoding = await getGoogleGeocoding(str);
-        await initMap(geocoding.lat, geocoding.lng);
+        $.ajax({
+            url: `/api/third/google/geocoding?address=${address}`,
+            type: "GET",
+            success: async function (coordinate) {
+                await initMap(coordinate.lat, coordinate.lng);
+            },
+            error: function (err) {
+                console.error(err);
+            }
+        });
 
         var category = $("select[name='category']").val();
         code_search();
@@ -71,7 +79,5 @@ $(function () {
 });
 
 $(document).ready(function () {
-    loadGoogleMap()
-        .then(() => console.log('success loading google map.'))
-        .catch((err) => console.error(err));
+    loadGoogleMap();
 })

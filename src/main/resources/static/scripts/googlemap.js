@@ -1,13 +1,21 @@
 let map;
 
-async function loadGoogleMap() {
-    const key = await getGoogleMapApiKey();
+function loadGoogleMap() {
 
-    let script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap`;
-    script.async = true;
+    $.ajax({
+        url: '/api/third/getGoogleApiKey',
+        type: "POST",
+        success: function (key) {
+            let script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap`;
+            script.async = true;
 
-    document.head.appendChild(script);
+            document.head.appendChild(script);
+        },
+        error: function (err) {
+            console.error(err);
+        }
+    });
 }
 
 async function initMap(lat = 35.1595454, lng = 126.8526012) {
