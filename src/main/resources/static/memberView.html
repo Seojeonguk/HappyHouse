@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8">
+		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<title>Happy House | 회원 정보 수정</title>
+		<title>Happy House | 회원 정보</title>
 
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -11,32 +11,32 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 		<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR&display=swap" rel="stylesheet">
 		<!-- Custom fonts for this template -->
-		<link href="../lib/fontawesome-free/css/all.min.css" rel="stylesheet">
-		<link href="../lib/simple-line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css">
+		<link href="lib/fontawesome-free/css/all.min.css" rel="stylesheet">
+		<link href="lib/simple-line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css">
 
 		<!-- Custom styles for this template -->
-		<link href="../styles/css/landing-page.min.css" rel="stylesheet">
-		<link href="../styles/css/memberView.css" rel="stylesheet">
-		<script type="text/javascript" src="../scripts/memberUpdate.js"></script>
+		<link href="styles/css/landing-page.min.css" rel="stylesheet">
+		<link href="styles/css/memberView.css" rel="stylesheet">
+		<script type="text/javascript" src="scripts/memberView.js"></script>
 
 	</head>
 	<body>
 		<div class="header fixed-top shadow">
 			<nav class="navbar navbar-light bg-light static-top">
 				<div class="container">
-					<a class="navbar-brand" href="../index.html">
+					<a class="navbar-brand" href="index.html">
 						<i class="fa fa-home pr-2"></i>
 						Happy House
 					</a>
 					<div class="btn-zone">
 						<div class="btn-group">
-							<a class="btn btn-sm btn-primary navBtn" id="nav-logoutBtn" href="./login.html">
+							<a class="btn btn-sm btn-primary navBtn" id="nav-logoutBtn" href="login.html">
 								<i class="fa fa-unlock pr-2"></i>
 								Logout
 							</a>
 						</div>
 						<div class="btn-group">
-							<a class="btn btn-sm btn-primary mr-2 navBtn" id="nav-meminfoBtn" href="./signupForm.html">
+							<a class="btn btn-sm btn-primary mr-2 navBtn" id="nav-meminfoBtn" href="signupForm.html">
 								<i class="fa fa-user pr-2"></i>
 								회원정보
 							</a>
@@ -61,9 +61,9 @@
 			<div class="container signupBg mt-4 mb-7">
 				<div class="row justify-content-center">
 					<div class="col-7 signupBox">
-						<div class="form-group">
+						<form method="post" action="index.html">
 							<div class="row mb-5 justify-content-center">
-								<h2>회원 정보 수정</h2>
+								<h2>회원 정보 확인</h2>
 							</div>
 							<div class="form-group row">
 								<label for="id">아이디
@@ -75,28 +75,34 @@
 								<label for="pw">비밀번호
 									<p>*</p>
 								</label>
-								<input type="text" class="form-control" placeholder="" id="pw" name="pw" minlength="6">
+								<div class="col-md-8" id="pw"></div>
 							</div>
 							<div class="form-group row">
 								<label for="name">이름
 									<p>*</p>
 								</label>
-								<input type="text" class="form-control" placeholder="" required id="name" name="name">
+								<div class="col-md-8" id="name"></div>
 							</div>
 							<div class="form-group row">
 								<label for="addr">주소
 									<p>*</p>
 								</label>
-								<input type="text" class="form-control" placeholder="" required id="addr" name="addr">
+								<div class="col-md-8" id="addr"></div>
 							</div>
 							<div class="form-group row mb-4">
 								<label for="tel">전화번호
 									<p>*</p>
 								</label>
-								<input type="text" class="form-control" placeholder="" required id="tel" name="tel">
+								<div class="col-md-8" id="tel"></div>
 							</div>
-							<input type="submit" class="btn btn-primary btn-block" id="joinBtn" value="수정">
-						</div>
+							<div class="row">
+								<div class="col btn-group">
+									<input type="button" class="btn btn-primary" id="btnClose" value="확인">
+									<input type="button" class=" btn btn-primary" id="btnChange" value="수정">
+									<input type="button" class="btn btn-primary" id="btnDelete" value="탈퇴">
+								</div>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>
