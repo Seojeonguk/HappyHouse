@@ -12,24 +12,25 @@ $(document).ready(function () {
             return;
         }
 
-        const body = JSON.stringify({
-            loginId: id,
-            pw: pw,
-            name: name,
-            addr: addr,
-            tel: tel
+        $.ajax({
+            url: "/api/user/signUp",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                loginId: id,
+                pw: pw,
+                name: name,
+                addr: addr,
+                tel: tel
+            }),
+            success: function (response) {
+                alert('성공적으로 회원가입이 되셨습니다.');
+                window.location = 'index.html';
+            },
+            error: function (err) {
+                console.error(err);
+            }
         });
-
-        fetch('http://localhost:8080/api/user/signUp',
-            {
-                method: "POST", body: body, headers: {
-                    'Content-Type': 'application/json'
-                },
-            })
-            .then(res => res.text())
-            .then(res => console.log(res))
-            .catch(err => console.error(err));
-
     });
 });
 

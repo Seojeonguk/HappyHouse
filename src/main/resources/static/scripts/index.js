@@ -59,7 +59,5 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-    loadGoogleMap()
-        .then(() => console.log('success loading google map.'))
-        .catch((err) => console.error(err));
+    loadGoogleMap();
 });
