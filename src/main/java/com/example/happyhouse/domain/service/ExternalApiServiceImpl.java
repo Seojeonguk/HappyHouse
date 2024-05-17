@@ -17,18 +17,18 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class ExternalApiServiceImpl implements ExternalApiService {
 
-    @Value("${google.api-key}")
-    private String googleApiKey;
+    @Value("${external.google.key}")
+    private String externalGoogleKey;
 
-    @Value("${google.geocoding.endpoint}")
-    private String googleGeocodingEndpoint;
+    @Value("${external.google.geocoding.endpoint}")
+    private String externalGoogleGeocodingEndpoint;
 
     @Override
     public GeocodingRes getGeocoding(String address) throws IOException {
-        StringBuilder urlBuilder = new StringBuilder(googleGeocodingEndpoint);
+        StringBuilder urlBuilder = new StringBuilder(externalGoogleGeocodingEndpoint);
         urlBuilder.append("/json");
         urlBuilder.append("?" + URLEncoder.encode("address", StandardCharsets.UTF_8) + "=" + address.replaceAll(" ","+"));
-        urlBuilder.append("&" + URLEncoder.encode("key", StandardCharsets.UTF_8) + "=" + URLDecoder.decode(googleApiKey, StandardCharsets.UTF_8));
+        urlBuilder.append("&" + URLEncoder.encode("key", StandardCharsets.UTF_8) + "=" + URLDecoder.decode(externalGoogleKey, StandardCharsets.UTF_8));
 
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
