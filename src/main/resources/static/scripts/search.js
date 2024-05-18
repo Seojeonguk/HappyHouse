@@ -1,42 +1,15 @@
 $(function () {
-    load_si_data();
-
+    /*
     $("#search-btn").click(async function () {
-        let si = $("select[name='si']").val();
-        let gu = $("select[name='gu']").val();
-        let dong = $("select[name='dong']").val();
-
-        let str = si;
-        if (!isEmpty(gu)) {
-            str += " " + gu;
-        }
-
-        if (!isEmpty(dong)) {
-            str += " " + dong;
-        }
-
         $('.content-left').children().not('.content-left-title').remove();
 
-        $.ajax({
-            url: `/api/third/google/geocoding?address=${address}`,
-            type: "GET",
-            success: async function (coordinate) {
-                await initMap(coordinate.lat, coordinate.lng);
-            },
-            error: function (err) {
-                console.error(err);
-            }
-        });
-
         var category = $("select[name='category']").val();
-        code_search();
         if (category == "전체" || category == "아파트") {
             apart_search(si, gu, dong);
         }
         if (category == "전체" || category == "연립다세대") {
-            housing_search(si, gu, dong);
+            house_search(si, gu, dong);
         }
-
     });
 
     var domain_parameter = window.location.search.substring(1).split("&");
@@ -68,16 +41,42 @@ $(function () {
         init_gu();
         init_dong();
     }
-
-    $("select[name='si']").change(function () {
-        load_gu_data();
-    });
-
-    $("select[name='gu']").change(function () {
-        load_dong_data();
-    });
+     */
 });
 
 $(document).ready(function () {
+    initSearch();
+
     loadGoogleMap();
+
+    const params = loadQueryParam();
+    getCoordinates(params);
 })
+
+function loadQueryParam() {
+    const params = new URLSearchParams(window.location.search);
+
+    const legalCode = params.get('legalCode');
+    const si = params.get('si');
+    const gu = params.get('gu');
+    const dong = params.get('dong');
+
+    return { legalCode, si,gu, dong };
+}
+
+function getCoordinates({si,gu,dong}) {
+    if(!isVerifyInputFields(si,gu,dong)) {
+        return;
+    }
+
+    $.ajax({
+        url: `/api/third/google/geocoding?address=${si} ${gu} ${dong}`,
+        type: "GET",
+        success: async function (coordinate) {
+            await initMap(coordinate.lat, coordinate.lng);
+        },
+        error: function (err) {
+            console.error(err);
+        }
+    });
+}

@@ -40,24 +40,9 @@ $(document).ready(function () {
         document.querySelector("#nav-meminfoBtn").setAttribute("style",
             "display: none ");
     });
-
-
-    load_si_data();
-    init_gu();
-    init_dong();
-    $("select[name='si']").change(function () {
-        load_gu_data();
-    });
-
-    $("select[name='gu']").change(function () {
-        load_dong_data();
-    });
-
-    $("select[name='dong']").change(function () {
-        $("#searching-form").submit();
-    });
 });
 
 $(document).ready(function () {
+    initSearch();
     loadGoogleMap();
 });
