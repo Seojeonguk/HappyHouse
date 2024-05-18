@@ -99,7 +99,7 @@ function apart_search({si, gu, dong}) {
                     url: `/api/third/google/geocoding?address=${si} ${gu} ${dong} ${res.apartmentName}`,
                     type: "GET",
                     success: async function (coordinate) {
-                        mapMarking(coordinate.lat, coordinate.lng, res, 0);
+                        mapMarking(coordinate.lat, coordinate.lng, res, "red");
                     },
                     error: function (err) {
                         console.error(err);
@@ -132,7 +132,7 @@ function house_search({si, gu, dong}) {
                     url: `/api/third/google/geocoding?address=${si} ${gu} ${dong} ${res.apartmentName}`,
                     type: "GET",
                     success: async function (coordinate) {
-                        mapMarking(coordinate.lat, coordinate.lng, res, 1);
+                        mapMarking(coordinate.lat, coordinate.lng, res, "blue");
                     },
                     error: function (err) {
                         console.error(err);
