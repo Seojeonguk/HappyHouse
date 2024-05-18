@@ -107,6 +107,7 @@ function apart_search({si, gu, dong}) {
                 });
 
                 let div = $(`<div class="item"></div>`);
+                $(`<p class="item-name">이름 : ${res.apartmentName}</p>`).appendTo(div);
                 $(`<p class="item-money">가격 : ${res.dealAmount}</p>`).appendTo(div);
                 $(`<p class="item-area">면적 : ${res.exclusiveArea} ${String.fromCodePoint(0x33A0)}</p>`).appendTo(div);
                 $(`<p class="item-category">거래구분 : 아파트</p>`).appendTo(div);
@@ -139,6 +140,7 @@ function house_search({si, gu, dong}) {
                 });
 
                 let div = $(`<div class="item"></div>`);
+                $(`<p class="item-name">이름 : ${res.apartmentName}</p>`).appendTo(div);
                 $(`<p class="item-money">가격 : ${res.dealAmount}</p>`).appendTo(div);
                 $(`<p class="item-area">면적 : ${res.exclusiveArea} ${String.fromCodePoint(0x33A0)}</p>`).appendTo(div);
                 $(`<p class="item-category">거래구분 : 주택</p>`).appendTo(div);
