@@ -33,7 +33,7 @@ async function initMap(lat = 35.1595454, lng = 126.8526012) {
     });
 }
 
-function mapMarking(lat, lng, item_list, color) {
+function mapMarking(lat, lng, tradeInfo, color) {
     lat *= 1;
     lng *= 1;
     const blueMarker = {
@@ -62,18 +62,18 @@ function mapMarking(lat, lng, item_list, color) {
         map,
         icon: color == 1 ? blueMarker : redMarker
     });
-    attch_message(marker, item_list, color);
+    attach_message(marker, tradeInfo, color);
 }
 
-function attch_message(marker, item_list, color) {
-    var input_btn = '<input type="button" onclick="javascript:detail_btn($(this));" color="' + color + '" id="' + item_list[3] + '" title="' + item_list[3] + '"value="자세히보기"/>';
-    var infowindow = new google.maps.InfoWindow({
-        content: item_list[3] + "<br/>가격 : " + item_list[1] + "<br/>토지면적 : " + item_list[2] + String.fromCodePoint(0x33A0) + "<br/>" + input_btn,
+function attach_message(marker, tradeInfo, color) {
+    let inputBtn = `<input type="button" onclick="javascript:detail_btn($(this));" color=${color} id=${tradeInfo.apartmentName} title=${tradeInfo.apartmentName} value="자세히보기"/>`;
+    let tradeInfoContent = new google.maps.InfoWindow({
+        content: `${tradeInfo.apartmentName}<br/>가격 : ${tradeInfo.dealAmount}<br/>건축연도 : ${tradeInfo.constructionYear}<br/>${inputBtn}`,
         size: new google.maps.Size(50, 50)
     });
 
     google.maps.event.addListener(marker, 'click', function () { // 이벤트 등록
-        infowindow.open(map, marker);
+        tradeInfoContent.open(map, marker);
     });
 }
 

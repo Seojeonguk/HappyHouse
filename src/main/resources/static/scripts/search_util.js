@@ -88,12 +88,31 @@ function init_dong() {
 }
 
 /* 아파트 데이터 서칭 */
-function apart_search(si, gu, dong) {
+function apart_search({si, gu, dong}) {
     $.ajax({
         url: "/api/third/getApartTrade",
         type: "GET",
         success: function (response) {
+            console.log(response);
+            $.each(response, function (idx,res) {
+                $.ajax({
+                    url: `/api/third/google/geocoding?address=${si} ${gu} ${dong} ${res.apartmentName}`,
+                    type: "GET",
+                    success: async function (coordinate) {
+                        mapMarking(coordinate.lat, coordinate.lng, res, 0);
+                    },
+                    error: function (err) {
+                        console.error(err);
+                    }
+                });
 
+                let div = $(`<div class="item"></div>`);
+                $(`<p class="item-money">가격 : ${res.dealAmount}</p>`).appendTo(div);
+                $(`<p class="item-area">면적 : ${res.exclusiveArea} ${String.fromCodePoint(0x33A0)}</p>`).appendTo(div);
+                $(`<p class="item-category">거래구분 : 아파트</p>`).appendTo(div);
+                $(`<p class="item-deal">${res.dealYear}.${res.dealMonth}.${res.dealDay}</p>`).appendTo(div);
+                div.appendTo(".content-left");
+            });
         },
         error: function (err) {
             console.error(err);
@@ -101,116 +120,34 @@ function apart_search(si, gu, dong) {
     });
 }
 
-function house_search(si, gu, dong) {
+function house_search({si, gu, dong}) {
     $.ajax({
         url: "api/third/getHouseTrade",
         type: "GET",
         success: function (response) {
+            console.log(response);
+            $.each(response, function (idx,res) {
+                $.ajax({
+                    url: `/api/third/google/geocoding?address=${si} ${gu} ${dong} ${res.apartmentName}`,
+                    type: "GET",
+                    success: async function (coordinate) {
+                        mapMarking(coordinate.lat, coordinate.lng, res, 1);
+                    },
+                    error: function (err) {
+                        console.error(err);
+                    }
+                });
 
+                let div = $(`<div class="item"></div>`);
+                $(`<p class="item-money">가격 : ${res.dealAmount}</p>`).appendTo(div);
+                $(`<p class="item-area">면적 : ${res.exclusiveArea} ${String.fromCodePoint(0x33A0)}</p>`).appendTo(div);
+                $(`<p class="item-category">거래구분 : 주택</p>`).appendTo(div);
+                $(`<p class="item-deal">${res.dealYear}.${res.dealMonth}.${res.dealDay}</p>`).appendTo(div);
+                div.appendTo(".content-left");
+            });
         },
         error: function (err) {
             console.error(err);
         }
     })
 }
-
-/* 다세대주택 서칭 */
-/*
-function housing_search(si, gu, dong) {
-    var dupl = [];
-
-    $.ajax({
-        url: 'housing.jsp',
-        type: 'post',
-        data: "code=" + code + "&dong=" + dong + "&name=",
-        success: function (response) {
-            var arr = response.split('\n');
-            $.each(arr, function (index, item) {
-                if (item.trim() != "") {
-                    var item_list = item.split("|");
-                    if (dupl.indexOf(item_list[3]) == -1) {
-                        google_geocoding(si, gu, dong, item_list, 1);
-                        var $div = $('<div class="item"></div>');
-                        $('<p class="item-name">' + item_list[3] + '</p>').appendTo($div);
-                        $('<p class="item-money">' + '가격 : ' + item_list[1] + '</p>').appendTo($div);
-                        $('<p class="item-square">' + '토지면적 : ' + item_list[2] + String.fromCodePoint(0x33A0) + '</p>').appendTo($div);
-                        $('<p class="item-category">' + '거래구분 : 다세대' + '</p>').appendTo($div);
-                        $div.appendTo(".content-left");
-                        dupl.push(item_list[3]);
-                    }
-                }
-            });
-        },
-        error: function () {
-            console.log('apertment.jsp load error!');
-        }
-    });
-}
-
-
-function detail_apart_search(name) {
-    $("#loading-page").css("display", "block");
-    $.ajax({
-        url: 'apartment.jsp',
-        type: 'post',
-        data: "code=" + code + "&name=" + name,
-        success: function (response) {
-            $(".content-left").eq(0).children().not(".content-left-title").remove();
-
-            var $name = $('<div class="item item-name">' + name + '</div>');
-            $name.appendTo('.content-left');
-
-            var arr = response.split('\n');
-            $.each(arr, function (index, item) {
-                if (item.trim() != "") {
-                    var item_list = item.split("|");
-                    var $div = $('<div class="item"></div>');
-                    $('<p class="item-money">' + '가격 : ' + item_list[1] + '</p>').appendTo($div);
-                    $('<p class="item-square">' + '토지면적 : ' + item_list[2] + String.fromCodePoint(0x33A0) + '</p>').appendTo($div);
-                    $('<p class="item-category">' + '거래구분 : 아파트' + '</p>').appendTo($div);
-                    $('<p class="item-trade">' + item_list[4] + "." + item_list[5] + "." + item_list[6] + '</p>').appendTo($div);
-                    $div.appendTo(".content-left");
-                }
-            });
-            $("#loading-page").css("display", "none");
-        },
-        error: function () {
-            console.log('apertment.jsp load error!');
-        }
-    });
-}
-
-function detail_house_search(name) {
-    $("#loading-page").css("display", "block");
-    var detail_dong = str.split(' ')[2];
-    $.ajax({
-        url: 'housing.jsp',
-        type: 'post',
-        data: "code=" + code + "&dong=" + detail_dong + "&name=" + name,
-        success: function (response) {
-            $(".content-left").eq(0).children().not(".content-left-title").remove();
-
-            var $name = $('<div class="item item-name">' + name + '</div>');
-            $name.appendTo('.content-left');
-
-            var arr = response.split('\n');
-            $.each(arr, function (index, item) {
-                if (item.trim() != "") {
-                    var item_list = item.split("|");
-                    var $div = $('<div class="item"></div>');
-                    $('<p class="item-money">' + '가격 : ' + item_list[1] + '</p>').appendTo($div);
-                    $('<p class="item-square">' + '토지면적 : ' + item_list[2] + String.fromCodePoint(0x33A0) + '</p>').appendTo($div);
-                    $('<p class="item-category">' + '거래구분 : 다세대' + '</p>').appendTo($div);
-                    $('<p class="item-trade">' + item_list[4] + "." + item_list[5] + "." + item_list[6] + '</p>').appendTo($div);
-                    $div.appendTo(".content-left");
-                }
-            });
-            $("#loading-page").css("display", "none");
-        },
-        error: function () {
-            console.log('apertment.jsp load error!');
-        }
-    });
-}
-
- */
