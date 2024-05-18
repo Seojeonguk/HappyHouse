@@ -82,17 +82,23 @@
 		<div class="container">
 			<div id="loading-page">데이터 로딩중...</div>
 			<div class="option text-center mt-2 mb-2">
-				<select id="category" name="category">
-					<option value="전체">전체</option>
-					<option value="아파트">아파트</option>
-					<option value="연립다세대">다세대</option>
-				</select>
-				<select id="si" name="si">
-					<option name="si_init" value="">시/도</option>
-				</select>
-				<select id="gu" name="gu"></select>
-				<select id="dong" name="dong"></select>
-				<input type="button" id="search-btn" value="검색" />
+				<form id="searching-form" name="searching-form" method="GET" action="search.html">
+					<input type="hidden" id="legalCode" name="legalCode" />
+					<div class="">
+						<div class="option text-center mt-2 mb-2">
+							<select id="category" name="category">
+								<option value="전체">전체</option>
+								<option value="아파트">아파트</option>
+								<option value="연립다세대">연립다세</option>
+							</select>
+							<select id="si" name="si">
+								<option value="">시/도</option>
+							</select>
+							<select id="gu" name="gu"></select>
+							<select id="dong" name="dong"></select>
+						</div>
+					</div>
+				</form>
 			</div>
 			<div class="content row">
 				<div class="content-left" id="content-left">
