@@ -94,17 +94,9 @@ function apart_search({si, gu, dong}) {
         type: "GET",
         success: function (response) {
             console.log(response);
-            $.each(response, function (idx,res) {
-                $.ajax({
-                    url: `/api/third/google/geocoding?address=${si} ${gu} ${dong} ${res.apartmentName}`,
-                    type: "GET",
-                    success: async function (coordinate) {
-                        mapMarking(coordinate.lat, coordinate.lng, res, "red");
-                    },
-                    error: function (err) {
-                        console.error(err);
-                    }
-                });
+            $.each(response, async function (idx,res) {
+                const coordinate = await getCoordinate(`${si} ${gu} ${dong} ${res.apartmentName}`);
+                mapMarking(coordinate.lat, coordinate.lng, res, "blue");
 
                 let div = $(`<div class="item"></div>`);
                 $(`<p class="item-name">이름 : ${res.apartmentName}</p>`).appendTo(div);
@@ -127,17 +119,9 @@ function house_search({si, gu, dong}) {
         type: "GET",
         success: function (response) {
             console.log(response);
-            $.each(response, function (idx,res) {
-                $.ajax({
-                    url: `/api/third/google/geocoding?address=${si} ${gu} ${dong} ${res.apartmentName}`,
-                    type: "GET",
-                    success: async function (coordinate) {
-                        mapMarking(coordinate.lat, coordinate.lng, res, "blue");
-                    },
-                    error: function (err) {
-                        console.error(err);
-                    }
-                });
+            $.each(response, async function (idx,res) {
+                const coordinate = await getCoordinate(`${si} ${gu} ${dong} ${res.apartmentName}`);
+                mapMarking(coordinate.lat, coordinate.lng, res, "red");
 
                 let div = $(`<div class="item"></div>`);
                 $(`<p class="item-name">이름 : ${res.apartmentName}</p>`).appendTo(div);

@@ -28,3 +28,16 @@ function isVerifyInputFields(...args) {
 
     return true;
 }
+
+function loadQueryParams(...args) {
+    const params = new URLSearchParams(window.location.search);
+    const queryParams = {};
+
+    args.forEach(arg => {
+        if (params.has(arg)) {
+            queryParams[arg] = params.get(arg);
+        }
+    })
+
+    return queryParams;
+}
