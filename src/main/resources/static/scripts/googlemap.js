@@ -63,3 +63,19 @@ function mapMarking(lat, lng, tradeInfo, color) {
         tradeInfoContent.open(map, marker);
     });
 }
+
+function getCoordinate(address) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `/api/third/google/geocoding?address=${address}`,
+            type: "GET",
+            success: function (coordinate) {
+                resolve(coordinate);
+            },
+            error: function (err) {
+                console.error(err);
+                reject(err);
+            }
+        });
+    });
+}
