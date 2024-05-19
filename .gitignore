@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-js/config.js
-.idea
-=======
 HELP.md
 .gradle
 build/
@@ -39,10 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
-<<<<<<< HEAD
->>>>>>> 37fa727 (Update spring version)
-=======
 
 ### application.yml ###
 src/main/resources/application.yml
->>>>>>> 8268562 (Add application file)
