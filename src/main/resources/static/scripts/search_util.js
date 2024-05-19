@@ -87,44 +87,20 @@ function init_dong() {
     $("#dong").html('<option name="dong_init" value="">읍/면/동</option>');
 }
 
-/* 아파트 데이터 서칭 */
-function apart_search({si, gu, dong}) {
+/* 거래 내역 조회 */
+function getTrade({category,legalCode,si, gu, dong}) {
     $.ajax({
-        url: "/api/third/getApartTrade",
+        url: "api/third/getTrade",
         type: "GET",
+        data: `category=${category}&legalCode=${legalCode}`,
         success: function (response) {
             console.log(response);
             $.each(response, async function (idx,res) {
-                const coordinate = await getCoordinate(`${si} ${gu} ${dong} ${res.apartmentName}`);
-                mapMarking(coordinate.lat, coordinate.lng, res, "blue");
-
-                let div = $(`<div class="item"></div>`);
-                $(`<p class="item-name">이름 : ${res.apartmentName}</p>`).appendTo(div);
-                $(`<p class="item-money">가격 : ${res.dealAmount}</p>`).appendTo(div);
-                $(`<p class="item-area">면적 : ${res.exclusiveArea} ${String.fromCodePoint(0x33A0)}</p>`).appendTo(div);
-                $(`<p class="item-category">거래구분 : 아파트</p>`).appendTo(div);
-                $(`<p class="item-deal">${res.dealYear}.${res.dealMonth}.${res.dealDay}</p>`).appendTo(div);
-                div.appendTo(".content-left");
-            });
-        },
-        error: function (err) {
-            console.error(err);
-        }
-    });
-}
-
-function house_search({si, gu, dong}) {
-    $.ajax({
-        url: "api/third/getHouseTrade",
-        type: "GET",
-        success: function (response) {
-            console.log(response);
-            $.each(response, async function (idx,res) {
-                const coordinate = await getCoordinate(`${si} ${gu} ${dong} ${res.apartmentName}`);
+                const coordinate = await getCoordinate(`${si} ${gu} ${dong} ${res.name}`);
                 mapMarking(coordinate.lat, coordinate.lng, res, "red");
 
                 let div = $(`<div class="item"></div>`);
-                $(`<p class="item-name">이름 : ${res.apartmentName}</p>`).appendTo(div);
+                $(`<p class="item-name">이름 : ${res.name}</p>`).appendTo(div);
                 $(`<p class="item-money">가격 : ${res.dealAmount}</p>`).appendTo(div);
                 $(`<p class="item-area">면적 : ${res.exclusiveArea} ${String.fromCodePoint(0x33A0)}</p>`).appendTo(div);
                 $(`<p class="item-category">거래구분 : 주택</p>`).appendTo(div);

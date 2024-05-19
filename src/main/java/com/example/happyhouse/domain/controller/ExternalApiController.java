@@ -1,8 +1,7 @@
 package com.example.happyhouse.domain.controller;
 
-import com.example.happyhouse.domain.dto.response.ApartTradeRes;
 import com.example.happyhouse.domain.dto.response.GeocodingRes;
-import com.example.happyhouse.domain.dto.response.HouseTradeRes;
+import com.example.happyhouse.domain.dto.response.TradeRes;
 import com.example.happyhouse.domain.service.ExternalApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,13 +27,8 @@ public class ExternalApiController {
         return ResponseEntity.ok(externalApiService.getGoogleApiKey());
     }
 
-    @GetMapping("/getApartTrade")
-    public ResponseEntity<List<ApartTradeRes>> getApartTrade() throws IOException {
-        return ResponseEntity.ok(externalApiService.getApartTrade());
-    }
-
-    @GetMapping("/getHouseTrade")
-    public ResponseEntity<List<HouseTradeRes>> getHouseTrade() throws IOException {
-        return ResponseEntity.ok(externalApiService.getHouseTrade());
+    @GetMapping("/getTrade")
+    public ResponseEntity<List<TradeRes>> getTrade(@RequestParam String category, @RequestParam String legalCode) throws IOException {
+        return ResponseEntity.ok(externalApiService.getTrade(category,legalCode));
     }
 }

@@ -55,7 +55,7 @@ function mapMarking(lat, lng, tradeInfo, color) {
     });
 
     let tradeInfoContent = new google.maps.InfoWindow({
-        content: `${tradeInfo.apartmentName}<br/>면적 : ${tradeInfo.exclusiveArea}${String.fromCodePoint(0x33A0)}<br/>건축연도 : ${tradeInfo.constructionYear}<br/>가격 : ${tradeInfo.dealAmount}`,
+        content: `${tradeInfo.name}<br/>면적 : ${tradeInfo.exclusiveArea}${String.fromCodePoint(0x33A0)}<br/>건축연도 : ${tradeInfo.constructionYear}<br/>가격 : ${tradeInfo.dealAmount}`,
         size: new google.maps.Size(50, 50)
     });
 
