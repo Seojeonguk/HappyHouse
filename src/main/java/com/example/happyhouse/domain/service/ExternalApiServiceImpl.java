@@ -75,17 +75,17 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     public List<TradeRes> getTrade(String category, String legalCode) throws IOException {
         List<TradeRes> tradeList = new ArrayList<>();
         if ("전체".equals(category)) {
-            List<TradeRes> houseTrades = apiCall("연립다세대", legalCode, externalDataHouseTradeEndpoint);
-            List<TradeRes> apartTrades = apiCall("아파트", legalCode, externalDataAptTradeEndpoint);
+            List<TradeRes> houseTrades = fetchTradeData("연립다세대", legalCode, externalDataHouseTradeEndpoint);
+            List<TradeRes> apartTrades = fetchTradeData("아파트", legalCode, externalDataAptTradeEndpoint);
 
             tradeList.addAll(houseTrades);
             tradeList.addAll(apartTrades);
         } else if ("아파트".equals(category)) {
-            List<TradeRes> apartTrades = apiCall("아파트", legalCode, externalDataAptTradeEndpoint);
+            List<TradeRes> apartTrades = fetchTradeData("아파트", legalCode, externalDataAptTradeEndpoint);
 
             tradeList.addAll(apartTrades);
         } else if ("연립다세대".equals(category)) {
-            List<TradeRes> houseTrades = apiCall("연립다세대", legalCode, externalDataHouseTradeEndpoint);
+            List<TradeRes> houseTrades = fetchTradeData("연립다세대", legalCode, externalDataHouseTradeEndpoint);
 
             tradeList.addAll(houseTrades);
         } else {
@@ -95,7 +95,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         return tradeList;
     }
 
-    private List<TradeRes> apiCall(String category, String legalCode, String endPoint) throws IOException {
+    private List<TradeRes> fetchTradeData(String category, String legalCode, String endPoint) throws IOException {
         StringBuilder urlBuilder = new StringBuilder(endPoint);
         urlBuilder.append("?").append(URLEncoder.encode("serviceKey", StandardCharsets.UTF_8)).append("=").append(externalDataKey);
         urlBuilder.append("&").append(URLEncoder.encode("LAWD_CD", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode(legalCode.substring(0, 5), StandardCharsets.UTF_8));
