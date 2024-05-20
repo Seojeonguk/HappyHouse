@@ -51,30 +51,10 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         urlBuilder.append("?" + URLEncoder.encode("address", StandardCharsets.UTF_8) + "=" + address.replaceAll(" ", "+"));
         urlBuilder.append("&" + URLEncoder.encode("key", StandardCharsets.UTF_8) + "=" + URLDecoder.decode(externalGoogleKey, StandardCharsets.UTF_8));
 
-        log.info(urlBuilder.toString());
+        String response = fetchDataFromAPI(urlBuilder.toString());
 
-        URL url = new URL(urlBuilder.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Content-type", "application/json");
-
-        BufferedReader rd;
-        if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
-            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        } else {
-            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-        }
-
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = rd.readLine()) != null) {
-            sb.append(line);
-        }
-        rd.close();
-        conn.disconnect();
-
-        JSONObject response = new JSONObject(sb.toString());
-        JSONObject location = response
+        JSONObject jsonResponse = new JSONObject(response);
+        JSONObject location = jsonResponse
                 .getJSONArray("results")
                 .getJSONObject(0)
                 .getJSONObject("geometry")
@@ -121,7 +101,13 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         urlBuilder.append("&").append(URLEncoder.encode("LAWD_CD", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode(legalCode.substring(0, 5), StandardCharsets.UTF_8));
         urlBuilder.append("&").append(URLEncoder.encode("DEAL_YMD", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode("201512", StandardCharsets.UTF_8));
 
-        URL url = new URL(urlBuilder.toString());
+        String response = fetchDataFromAPI(urlBuilder.toString());
+
+        return parseXmlResponse(response, category);
+    }
+
+    private String fetchDataFromAPI(String path) throws IOException {
+        URL url = new URL(path);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Content-type", "application/json");
@@ -138,11 +124,10 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         while ((line = rd.readLine()) != null) {
             sb.append(line);
         }
-
         rd.close();
         conn.disconnect();
 
-        return parseXmlResponse(sb.toString(), category);
+        return sb.toString();
     }
 
     private List<TradeRes> parseXmlResponse(String xmlResponse, String category) {
