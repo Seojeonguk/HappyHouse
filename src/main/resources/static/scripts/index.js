@@ -45,4 +45,6 @@ $(document).ready(function () {
 $(document).ready(function () {
     initSearch();
     loadGoogleMap();
+    makeYear();
+    makeMonth();
 });

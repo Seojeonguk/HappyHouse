@@ -41,3 +41,16 @@ function loadQueryParams(...args) {
 
     return queryParams;
 }
+
+function makeYear(start = 2010, end = 2024) {
+    for (let i = end; i >= start; i--) {
+        $("#year").append(`<option value=${i}>${i}</option>`);
+    }
+}
+
+function makeMonth(start = 1, end = 12) {
+    for (let i = start; i <= end; i++) {
+        let monthStr = i.toString().padStart(2, '0');
+        $("#month").append(`<option value=${monthStr}>${monthStr}</option>`);
+    }
+}

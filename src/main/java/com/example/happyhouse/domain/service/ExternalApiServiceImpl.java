@@ -2,6 +2,7 @@ package com.example.happyhouse.domain.service;
 
 import com.example.happyhouse.domain.dto.response.GeocodingRes;
 import com.example.happyhouse.domain.dto.response.TradeRes;
+import com.example.happyhouse.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,8 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,20 +75,29 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     }
 
     @Override
-    public List<TradeRes> getTrade(String category, String legalCode) throws IOException {
+    public List<TradeRes> getTrade(String category, String legalCode, String year, String month) throws IOException {
         List<TradeRes> tradeList = new ArrayList<>();
+
+        LocalDate today = LocalDate.now();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
+        String searchDate = today.format(formatter);
+        if (!Util.isEmpty(year) && !Util.isEmpty(month)) {
+            searchDate = year.concat(month);
+        }
+
         if ("전체".equals(category)) {
-            List<TradeRes> houseTrades = fetchTradeData("연립다세대", legalCode, externalDataHouseTradeEndpoint);
-            List<TradeRes> apartTrades = fetchTradeData("아파트", legalCode, externalDataAptTradeEndpoint);
+            List<TradeRes> houseTrades = fetchTradeData("연립다세대", legalCode, externalDataHouseTradeEndpoint, searchDate);
+            List<TradeRes> apartTrades = fetchTradeData("아파트", legalCode, externalDataAptTradeEndpoint, searchDate);
 
             tradeList.addAll(houseTrades);
             tradeList.addAll(apartTrades);
         } else if ("아파트".equals(category)) {
-            List<TradeRes> apartTrades = fetchTradeData("아파트", legalCode, externalDataAptTradeEndpoint);
+            List<TradeRes> apartTrades = fetchTradeData("아파트", legalCode, externalDataAptTradeEndpoint, searchDate);
 
             tradeList.addAll(apartTrades);
         } else if ("연립다세대".equals(category)) {
-            List<TradeRes> houseTrades = fetchTradeData("연립다세대", legalCode, externalDataHouseTradeEndpoint);
+            List<TradeRes> houseTrades = fetchTradeData("연립다세대", legalCode, externalDataHouseTradeEndpoint, searchDate);
 
             tradeList.addAll(houseTrades);
         } else {
@@ -95,11 +107,13 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         return tradeList;
     }
 
-    private List<TradeRes> fetchTradeData(String category, String legalCode, String endPoint) throws IOException {
+    private List<TradeRes> fetchTradeData(String category, String legalCode, String endPoint, String searchDate) throws IOException {
         StringBuilder urlBuilder = new StringBuilder(endPoint);
         urlBuilder.append("?").append(URLEncoder.encode("serviceKey", StandardCharsets.UTF_8)).append("=").append(externalDataKey);
         urlBuilder.append("&").append(URLEncoder.encode("LAWD_CD", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode(legalCode.substring(0, 5), StandardCharsets.UTF_8));
-        urlBuilder.append("&").append(URLEncoder.encode("DEAL_YMD", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode("201512", StandardCharsets.UTF_8));
+        urlBuilder.append("&").append(URLEncoder.encode("DEAL_YMD", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode(searchDate, StandardCharsets.UTF_8));
+
+        log.info(urlBuilder.toString());
 
         String response = fetchDataFromAPI(urlBuilder.toString());
 

@@ -88,11 +88,11 @@ function init_dong() {
 }
 
 /* 거래 내역 조회 */
-function getTrade({category,legalCode,si, gu, dong}) {
+function getTrade({category,legalCode,si, gu, dong, year,month}) {
     $.ajax({
         url: "api/third/getTrade",
         type: "GET",
-        data: `category=${category}&legalCode=${legalCode}`,
+        data: `category=${category}&legalCode=${legalCode}&year=${year}&month=${month}`,
         success: function (response) {
             console.log(response);
             $.each(response, async function (idx,res) {
