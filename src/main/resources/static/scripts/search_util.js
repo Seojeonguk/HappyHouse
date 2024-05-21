@@ -88,23 +88,24 @@ function init_dong() {
 }
 
 /* 거래 내역 조회 */
-function getTrade({category,legalCode,si, gu, dong, year,month}) {
+function getTrade({category, legalCode, si, gu, dong, year, month}) {
     $.ajax({
         url: "api/third/getTrade",
         type: "GET",
         data: `category=${category}&legalCode=${legalCode}&year=${year}&month=${month}`,
         success: function (response) {
             console.log(response);
-            $.each(response, async function (idx,res) {
-                const coordinate = await getCoordinate(`${si} ${gu} ${dong} ${res.name}`);
-                mapMarking(coordinate.lat, coordinate.lng, res, "red");
+            $.each(response, async function (idx, res) {
+                const {apartmentTrading, dealAmount, dealYear, dealMonth, dealDay, exclusiveArea, name} = res;
+                const coordinate = await getCoordinate(`${si} ${gu} ${dong} ${name}`);
+                mapMarking(coordinate.lat, coordinate.lng, res, apartmentTrading ? "red" : "blue");
 
                 let div = $(`<div class="item"></div>`);
-                $(`<p class="item-name">이름 : ${res.name}</p>`).appendTo(div);
-                $(`<p class="item-money">가격 : ${res.dealAmount}</p>`).appendTo(div);
-                $(`<p class="item-area">면적 : ${res.exclusiveArea} ${String.fromCodePoint(0x33A0)}</p>`).appendTo(div);
-                $(`<p class="item-category">거래구분 : 주택</p>`).appendTo(div);
-                $(`<p class="item-deal">${res.dealYear}.${res.dealMonth}.${res.dealDay}</p>`).appendTo(div);
+                $(`<p class="item-name">이름 : ${name}</p>`).appendTo(div);
+                $(`<p class="item-money">가격 : ${dealAmount}</p>`).appendTo(div);
+                $(`<p class="item-area">면적 : ${exclusiveArea} ${String.fromCodePoint(0x33A0)}</p>`).appendTo(div);
+                $(`<p class="item-category">거래구분 : ${apartmentTrading ? "아파트" : "연립다세대"}</p>`).appendTo(div);
+                $(`<p class="item-deal">${dealYear}.${dealMonth}.${dealDay}</p>`).appendTo(div);
                 div.appendTo(".content-left");
             });
         },

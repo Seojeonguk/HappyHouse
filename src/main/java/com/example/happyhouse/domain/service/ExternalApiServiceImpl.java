@@ -170,8 +170,9 @@ public class ExternalApiServiceImpl implements ExternalApiService {
                     double exclusiveArea = Double.parseDouble(eElement.getElementsByTagName("전용면적").item(0).getTextContent());
                     String lotNumberAddress = eElement.getElementsByTagName("지번").item(0).getTextContent();
                     int floor = Integer.parseInt(eElement.getElementsByTagName("층").item(0).getTextContent());
+                    boolean isApartmentTrading = "아파트".equals(category);
 
-                    TradeRes res = new TradeRes(dealAmount, constructionYear, dealYear, dealMonth, dealDay, name, exclusiveArea, lotNumberAddress, floor);
+                    TradeRes res = new TradeRes(dealAmount, constructionYear, dealYear, dealMonth, dealDay, name, exclusiveArea, lotNumberAddress, floor, isApartmentTrading);
                     tradeResList.add(res);
                 }
             }
