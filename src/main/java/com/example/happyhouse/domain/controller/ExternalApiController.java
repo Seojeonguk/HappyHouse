@@ -28,7 +28,7 @@ public class ExternalApiController {
     }
 
     @GetMapping("/getTrade")
-    public ResponseEntity<List<TradeRes>> getTrade(@RequestParam String category, @RequestParam String legalCode) throws IOException {
-        return ResponseEntity.ok(externalApiService.getTrade(category,legalCode));
+    public ResponseEntity<List<TradeRes>> getTrade(@RequestParam String category, @RequestParam String legalCode, @RequestParam String year, @RequestParam String month) throws IOException {
+        return ResponseEntity.ok(externalApiService.getTrade(category, legalCode, year, month));
     }
 }
