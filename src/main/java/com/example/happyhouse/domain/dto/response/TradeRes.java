@@ -15,6 +15,7 @@ public class TradeRes {
     private double exclusiveArea; // 전용면적
     private String lotNumberAddress; // 지번
     private int floor; // 층
+    private boolean isApartmentTrading;
 
     /* unused items in house trade
     private double landArea; // 대지권면적
