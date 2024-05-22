@@ -1,46 +1,55 @@
-function initSearch() {
-    load_si_data();
-    init_gu();
-    init_dong();
+function initSearchForm({year, month, category, si, gu, dong} = {}) {
+    makeYear({selectedYear: year});
+    makeMonth({selectedMonth: month});
+
+    if (!isEmpty(category)) {
+        $('#category').val(category);
+    }
+
+    if (!populateSelectOptions('si', 'siOptions', si)) {
+        fetchLegalCodesByRegion("si");
+    }
+
+    init_gu(gu);
+    init_dong(dong);
 
     $("#si").change(function () {
-        load_gu_data();
+        localStorage.removeItem('guOptions');
+        localStorage.removeItem('dongOptions');
+
+        init_gu();
+        init_dong();
+
+        const upperRegionCode = $("#si").find(":selected").attr('legalCode');
+        if (isEmpty(upperRegionCode)) {
+            return;
+        }
+
+        fetchLegalCodesByRegion("gu", upperRegionCode);
     })
 
     $("#gu").change(function () {
-        load_dong_data();
+        localStorage.removeItem('dongOptions');
+
+        init_dong();
+
+        const upperRegionCode = $("#gu").find(":selected").attr('legalCode');
+        if (isEmpty(upperRegionCode)) {
+            return;
+        }
+
+        fetchLegalCodesByRegion("dong", upperRegionCode);
     })
 
     $("#dong").change(function () {
+        saveForm();
         $("#legalCode").val($(this).find(":selected").attr('legalCode'));
         $("#searching-form").submit();
     })
 }
 
-function load_si_data() {
-    const upperRegionCode = "0000000000";
-    $.ajax({
-        url: "/api/file/legalCode",
-        type: "GET",
-        data: `upperRegionCode=${upperRegionCode}`,
-        success: function (response) {
-            $.each(response, function (idx, legalCode) {
-                $("#si").append(`<option value=${legalCode.legalName} legalCode="${legalCode.legalCode}">${legalCode.legalName}</option>`);
-            });
-        },
-        error: function (err) {
-            console.error(err);
-        }
-    });
-}
-
-/* 시/도 버튼 변경시 구 데이터 불러오기 */
-function load_gu_data() {
-    init_gu();
-    init_dong();
-
-    const upperRegionCode = $("#si").find(":selected").attr('legalCode');
-    if (isEmpty(upperRegionCode)) {
+function fetchLegalCodesByRegion(selectId, upperRegionCode = "0000000000") {
+    if (isEmpty(selectId)) {
         return;
     }
 
@@ -50,41 +59,22 @@ function load_gu_data() {
         data: `upperRegionCode=${upperRegionCode}`,
         success: function (response) {
             $.each(response, function (idx, legalCode) {
-                $("#gu").append(`<option value=${legalCode.legalName} legalCode="${legalCode.legalCode}">${legalCode.legalName}</option>`);
-            });
-        }
-    }));
-}
-
-/* 구 버튼 변경시 동 데이터 가져오기 */
-function load_dong_data() {
-    init_dong();
-
-    const upperRegionCode = $("#gu").find(":selected").attr('legalCode');
-    if (isEmpty(upperRegionCode)) {
-        return;
-    }
-
-    $.ajax(({
-        url: "/api/file/legalCode",
-        type: "GET",
-        data: `upperRegionCode=${upperRegionCode}`,
-        success: function (response) {
-            $.each(response, function (idx, legalCode) {
-                $("#dong").append(`<option value=${legalCode.legalName} legalCode="${legalCode.legalCode}">${legalCode.legalName}</option>`);
+                $(`#${selectId}`).append(`<option value=${legalCode.legalName} legalCode="${legalCode.legalCode}">${legalCode.legalName}</option>`);
             });
         }
     }));
 }
 
 /* 구 옵션 초기화 */
-function init_gu() {
+function init_gu(gu) {
     $("#gu").html('<option name="gu_init" value="">시/군/구</option>');
+    populateSelectOptions('gu', 'guOptions', gu);
 }
 
 /* 동 옵션 초기화 */
-function init_dong() {
+function init_dong(dong) {
     $("#dong").html('<option name="dong_init" value="">읍/면/동</option>');
+    populateSelectOptions('dong', 'dongOptions', dong);
 }
 
 /* 거래 내역 조회 */
@@ -113,4 +103,35 @@ function getTrade({category, legalCode, si, gu, dong, year, month}) {
             console.error(err);
         }
     })
+}
+
+function makeYear({selectedYear = new Date().getFullYear(), start = 2010, end = new Date().getFullYear()}) {
+    const yearSelect = $('#year');
+    yearSelect.empty(); // 기존 옵션 제거
+    for (let year = end; year >= start; year--) {
+        const option = $('<option></option>').attr('value', year).text(year);
+        if (selectedYear && year === selectedYear) {
+            option.attr('selected', 'selected');
+        }
+        yearSelect.append(option);
+    }
+}
+
+function makeMonth({selectedMonth = (new Date().getMonth() + 1).toString().padStart(2, '0'), start = 1, end = 12}) {
+    const monthSelect = $('#month');
+    monthSelect.empty();
+    for (let month = start; month <= end; month++) {
+        let monthStr = month.toString().padStart(2, '0');
+        const option = $('<option></option>').attr('value', monthStr).text(monthStr);
+        if (selectedMonth && monthStr === selectedMonth) {
+            option.attr('selected', 'selected');
+        }
+        monthSelect.append(option);
+    }
+}
+
+function saveForm() {
+    saveSelectOptions('si', 'siOptions');
+    saveSelectOptions('gu', 'guOptions');
+    saveSelectOptions('dong', 'dongOptions');
 }
