@@ -42,15 +42,34 @@ function loadQueryParams(...args) {
     return queryParams;
 }
 
-function makeYear(start = 2010, end = 2024) {
-    for (let i = end; i >= start; i--) {
-        $("#year").append(`<option value=${i}>${i}</option>`);
-    }
+function saveSelectOptions(selectId, storageKey) {
+    const options = [];
+
+    $(`#${selectId} option`).each(function () {
+        const value = $(this).attr('value');
+        const text = $(this).text();
+        const legalCode = $(this).attr('legalCode');
+        options.push({value, text, legalCode});
+    });
+
+    localStorage.setItem(storageKey, JSON.stringify(options));
 }
 
-function makeMonth(start = 1, end = 12) {
-    for (let i = start; i <= end; i++) {
-        let monthStr = i.toString().padStart(2, '0');
-        $("#month").append(`<option value=${monthStr}>${monthStr}</option>`);
+function populateSelectOptions(selectId, storageKey, selectedValue) {
+    const options = JSON.parse(localStorage.getItem(storageKey));
+    if (options) {
+        const select = $(`#${selectId}`);
+        select.empty();
+        options.forEach(option => {
+            const optionElement = $('<option></option>').attr('value', option.value).attr('legalCode', option.legalCode).text(option.text);
+            if(selectedValue && selectedValue === option.value) {
+                optionElement.attr('selected','selected');
+            }
+
+            select.append(optionElement);
+        });
+        return true;
     }
+
+    return false;
 }

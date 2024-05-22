@@ -43,8 +43,7 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-    initSearch();
+    localStorage.clear();
+    initSearchForm();
     loadGoogleMap();
-    makeYear();
-    makeMonth();
 });
