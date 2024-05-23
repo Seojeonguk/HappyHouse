@@ -23,13 +23,15 @@ async function initMap(lat = 35.1595454, lng = 126.8526012) {
     lng *= 1;
 
     const {Map} = await google.maps.importLibrary("maps");
+    const {AdvancedMarkerElement, PinElement} = await google.maps.importLibrary("marker");
 
     map = new Map(document.getElementById("map"), {
         center: {
             lat: lat,
             lng: lng
         },
-        zoom: 15
+        zoom: 15,
+        mapId: 'map'
     });
 }
 
@@ -37,23 +39,21 @@ function mapMarking(lat, lng, tradeInfo, color) {
     lat *= 1;
     lng *= 1;
 
-    let marker = new google.maps.Marker({
+    let marker = new google.maps.marker.AdvancedMarkerElement({
         position: {
             lat: lat,
             lng: lng
         },
         map,
-        icon: {
-            path: "M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
-            fillColor: color,
-            fillOpacity: 0.6,
-            strokeWeight: 0,
-            rotation: 0,
-            scale: 2,
-            anchor: new google.maps.Point(15, 30)
-        }
+        content: buildContent(tradeInfo),
+        title: 'photo'
     });
 
+    marker.addListener("click", () => {
+        toggleHighlight(marker);
+    });
+
+    /*
     let tradeInfoContent = new google.maps.InfoWindow({
         content: `${tradeInfo.name}<br/>면적 : ${tradeInfo.exclusiveArea}${String.fromCodePoint(0x33A0)}<br/>건축연도 : ${tradeInfo.constructionYear}<br/>가격 : ${tradeInfo.dealAmount}`,
         size: new google.maps.Size(50, 50)
@@ -62,6 +62,8 @@ function mapMarking(lat, lng, tradeInfo, color) {
     google.maps.event.addListener(marker, 'click', function () { // 이벤트 등록
         tradeInfoContent.open(map, marker);
     });
+
+     */
 }
 
 function getCoordinate(address) {
@@ -78,4 +80,64 @@ function getCoordinate(address) {
             }
         });
     });
+}
+
+function toggleHighlight(markerView) {
+    if (markerView.content.classList.contains("highlight")) {
+        markerView.content.classList.remove("highlight");
+        markerView.zIndex = null;
+    } else {
+        markerView.content.classList.add("highlight");
+        markerView.zIndex = 1;
+    }
+}
+
+function buildContent(tradeInfo) {
+    const content = document.createElement("div");
+    content.classList.add('property');
+
+    const icon = $("<div></div>").addClass("icon");
+    $("<i></i>").attr('aria-hidden', 'true').attr('title', 'home')
+        .addClass("fa").addClass("fa-icon").addClass("fa-solid").addClass(tradeInfo.apartmentTrading ? "fa-building" : "fa-home")
+        .appendTo(icon);
+    $("<span></span>").addClass('sr-only').html('home').appendTo(icon);
+
+    icon.appendTo(content);
+
+    const details = $("<div></div>").addClass("details");
+    $("<div></div>").addClass("name").html(tradeInfo.name).appendTo(details);
+    $("<div></div>").addClass("address").html(tradeInfo.lotNumberAddress).appendTo(details);
+    $("<div></div>").addClass("price").html(tradeInfo.dealAmount).appendTo(details);
+    $("<div></div>").addClass("dealDay").html(`${tradeInfo.dealYear}.${tradeInfo.dealMonth}.${tradeInfo.dealDay}`).appendTo(details);
+
+    const features = $("<div></div>").addClass("features");
+    // constructionYear exclusiveArea floor
+    const constructionYear = $("<div></div>").addClass("constructionYear");
+    $("<i></i>").attr('aria-hidden','true').attr('title','constructionYear')
+        .addClass('fa').addClass('fa-icons').addClass('fa-calendar').addClass('fa-regular')
+        .appendTo(constructionYear);
+    $("<span></span>").addClass('sr-only').html(tradeInfo.constructionYear).appendTo(constructionYear);
+    $("<span></span>").html(tradeInfo.constructionYear).appendTo(constructionYear);
+    constructionYear.appendTo(features);
+
+    const exclusiveArea = $("<div></div>").addClass("exclusiveArea");
+    $("<i></i>").attr('aria-hidden','true').attr('title','exclusiveArea')
+        .addClass('fa').addClass('fa-icons').addClass('fa-ruler')
+        .appendTo(exclusiveArea);
+    $("<span></span>").addClass('sr-only').html(tradeInfo.exclusiveArea).appendTo(exclusiveArea);
+    $("<span></span>").html(tradeInfo.exclusiveArea).appendTo(exclusiveArea);
+    exclusiveArea.appendTo(features);
+
+    const floor = $("<div></div>").addClass("floor");
+    $("<i></i>").attr('aria-hidden','true').attr('title','floor')
+        .addClass('fa').addClass('fa-icons').addClass('fa-layer-group')
+        .appendTo(floor);
+    $("<span></span>").addClass('sr-only').html(tradeInfo.floor).appendTo(floor);
+    $("<span></span>").html(tradeInfo.floor).appendTo(floor);
+    floor.appendTo(features);
+
+    features.appendTo(details);
+    details.appendTo(content);
+
+    return content;
 }
