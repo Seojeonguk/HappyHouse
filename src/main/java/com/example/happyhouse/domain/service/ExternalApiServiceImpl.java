@@ -113,8 +113,6 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         urlBuilder.append("&").append(URLEncoder.encode("LAWD_CD", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode(legalCode.substring(0, 5), StandardCharsets.UTF_8));
         urlBuilder.append("&").append(URLEncoder.encode("DEAL_YMD", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode(searchDate, StandardCharsets.UTF_8));
 
-        log.info(urlBuilder.toString());
-
         String response = fetchDataFromAPI(urlBuilder.toString());
 
         return parseXmlResponse(response, category);
@@ -125,6 +123,8 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Content-type", "application/json");
+
+        log.info(path);
 
         BufferedReader rd;
         if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
