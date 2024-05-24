@@ -1,5 +1,6 @@
 package com.example.happyhouse.domain.service;
 
+import com.example.happyhouse.domain.dto.request.TradeReq;
 import com.example.happyhouse.domain.dto.response.GeocodingRes;
 import com.example.happyhouse.domain.dto.response.TradeRes;
 import com.example.happyhouse.util.Util;
@@ -20,9 +21,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -49,24 +47,25 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
     @Override
     public GeocodingRes getGeocoding(String address) throws IOException {
-        StringBuilder urlBuilder = new StringBuilder(externalGoogleGeocodingEndpoint);
-        urlBuilder.append("/json");
-        urlBuilder.append("?" + URLEncoder.encode("address", StandardCharsets.UTF_8) + "=" + address.replaceAll(" ", "+"));
-        urlBuilder.append("&" + URLEncoder.encode("key", StandardCharsets.UTF_8) + "=" + URLDecoder.decode(externalGoogleKey, StandardCharsets.UTF_8));
+        String url = externalGoogleGeocodingEndpoint + "/json" +
+                "?address=" + address.replaceAll(" ", "+") +
+                "&key=" + externalGoogleKey +
+                "&language=ko";
 
-        String response = fetchDataFromAPI(urlBuilder.toString());
+        String response = fetchDataFromAPI(url);
 
         JSONObject jsonResponse = new JSONObject(response);
-        JSONObject location = jsonResponse
-                .getJSONArray("results")
-                .getJSONObject(0)
+        JSONObject firstResult = jsonResponse.getJSONArray("results").getJSONObject(0);
+
+        JSONObject location = firstResult
                 .getJSONObject("geometry")
                 .getJSONObject("location");
 
+        String formattedAddress = firstResult.getString("formatted_address");
         String lat = String.valueOf(location.getBigDecimal("lat"));
         String lng = String.valueOf(location.getBigDecimal("lng"));
 
-        return new GeocodingRes(lat, lng);
+        return new GeocodingRes(lat, lng, formattedAddress);
     }
 
     @Override
@@ -75,29 +74,31 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     }
 
     @Override
-    public List<TradeRes> getTrade(String category, String legalCode, String year, String month) throws IOException {
+    public List<TradeRes> getTrade(TradeReq tradeReq) throws IOException {
         List<TradeRes> tradeList = new ArrayList<>();
 
         LocalDate today = LocalDate.now();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
         String searchDate = today.format(formatter);
-        if (!Util.isEmpty(year) && !Util.isEmpty(month)) {
-            searchDate = year.concat(month);
+        if (!Util.isEmpty(tradeReq.getYear()) && !Util.isEmpty(tradeReq.getMonth())) {
+            searchDate = tradeReq.getYearMonth();
         }
 
+        String category = tradeReq.getCategory();
+        String legalCode = tradeReq.getLegalCode();
         if ("전체".equals(category)) {
-            List<TradeRes> houseTrades = fetchTradeData("연립다세대", legalCode, externalDataHouseTradeEndpoint, searchDate);
-            List<TradeRes> apartTrades = fetchTradeData("아파트", legalCode, externalDataAptTradeEndpoint, searchDate);
+            List<TradeRes> houseTrades = fetchTradeData("연립다세대", legalCode, externalDataHouseTradeEndpoint, searchDate, tradeReq.getSi());
+            List<TradeRes> apartTrades = fetchTradeData("아파트", legalCode, externalDataAptTradeEndpoint, searchDate, tradeReq.getSi());
 
             tradeList.addAll(houseTrades);
             tradeList.addAll(apartTrades);
         } else if ("아파트".equals(category)) {
-            List<TradeRes> apartTrades = fetchTradeData("아파트", legalCode, externalDataAptTradeEndpoint, searchDate);
+            List<TradeRes> apartTrades = fetchTradeData("아파트", legalCode, externalDataAptTradeEndpoint, searchDate, tradeReq.getSi());
 
             tradeList.addAll(apartTrades);
         } else if ("연립다세대".equals(category)) {
-            List<TradeRes> houseTrades = fetchTradeData("연립다세대", legalCode, externalDataHouseTradeEndpoint, searchDate);
+            List<TradeRes> houseTrades = fetchTradeData("연립다세대", legalCode, externalDataHouseTradeEndpoint, searchDate, tradeReq.getSi());
 
             tradeList.addAll(houseTrades);
         } else {
@@ -107,15 +108,15 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         return tradeList;
     }
 
-    private List<TradeRes> fetchTradeData(String category, String legalCode, String endPoint, String searchDate) throws IOException {
-        StringBuilder urlBuilder = new StringBuilder(endPoint);
-        urlBuilder.append("?").append(URLEncoder.encode("serviceKey", StandardCharsets.UTF_8)).append("=").append(externalDataKey);
-        urlBuilder.append("&").append(URLEncoder.encode("LAWD_CD", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode(legalCode.substring(0, 5), StandardCharsets.UTF_8));
-        urlBuilder.append("&").append(URLEncoder.encode("DEAL_YMD", StandardCharsets.UTF_8)).append("=").append(URLEncoder.encode(searchDate, StandardCharsets.UTF_8));
+    private List<TradeRes> fetchTradeData(String category, String legalCode, String endPoint, String searchDate, String si) throws IOException {
+        String urlBuilder = endPoint +
+                "?serviceKey=" + externalDataKey +
+                "&LAWD_CD=" + legalCode.substring(0, 5) +
+                "&DEAL_YMD=" + searchDate;
 
-        String response = fetchDataFromAPI(urlBuilder.toString());
+        String response = fetchDataFromAPI(urlBuilder);
 
-        return parseXmlResponse(response, category);
+        return parseXmlResponse(response, category, si);
     }
 
     private String fetchDataFromAPI(String path) throws IOException {
@@ -144,7 +145,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         return sb.toString();
     }
 
-    private List<TradeRes> parseXmlResponse(String xmlResponse, String category) {
+    private List<TradeRes> parseXmlResponse(String xmlResponse, String category, String si) {
         List<TradeRes> tradeResList = new ArrayList<>();
 
         try {
@@ -172,7 +173,11 @@ public class ExternalApiServiceImpl implements ExternalApiService {
                     int floor = Integer.parseInt(eElement.getElementsByTagName("층").item(0).getTextContent());
                     boolean isApartmentTrading = "아파트".equals(category);
 
-                    TradeRes res = new TradeRes(dealAmount, constructionYear, dealYear, dealMonth, dealDay, name, exclusiveArea, lotNumberAddress, floor, isApartmentTrading);
+                    String legalDong = eElement.getElementsByTagName("법정동").item(0).getTextContent().trim();
+
+                    GeocodingRes geocodingRes = getGeocoding(si + " " + legalDong + " " + name);
+
+                    TradeRes res = new TradeRes(dealAmount, constructionYear, dealYear, dealMonth, dealDay, name, exclusiveArea, lotNumberAddress, floor, isApartmentTrading, geocodingRes);
                     tradeResList.add(res);
                 }
             }

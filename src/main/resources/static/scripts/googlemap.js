@@ -30,7 +30,7 @@ async function initMap(lat = 35.1595454, lng = 126.8526012) {
             lat: lat,
             lng: lng
         },
-        zoom: 15,
+        zoom: 11,
         mapId: 'map'
     });
 }
@@ -106,7 +106,7 @@ function buildContent(tradeInfo) {
 
     const details = $("<div></div>").addClass("details");
     $("<div></div>").addClass("name").html(tradeInfo.name).appendTo(details);
-    $("<div></div>").addClass("address").html(tradeInfo.lotNumberAddress).appendTo(details);
+    $("<div></div>").addClass("address").html(tradeInfo.formattedAddress).appendTo(details);
     $("<div></div>").addClass("price").html(tradeInfo.dealAmount).appendTo(details);
     $("<div></div>").addClass("dealDay").html(`${tradeInfo.dealYear}.${tradeInfo.dealMonth}.${tradeInfo.dealDay}`).appendTo(details);
 
