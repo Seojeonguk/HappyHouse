@@ -1,5 +1,6 @@
 package com.example.happyhouse.domain.dto.response;
 
+import com.example.happyhouse.util.ParsingUtil;
 import lombok.Getter;
 import org.w3c.dom.Element;
 
@@ -19,17 +20,17 @@ public class TradeRes extends GeocodingRes {
 
     public TradeRes(Element element, String category) {
         super();
-        this.dealAmount = element.getElementsByTagName("거래금액").item(0).getTextContent().trim();
-        this.constructionYear = Integer.parseInt(element.getElementsByTagName("건축년도").item(0).getTextContent());
-        this.dealYear = Integer.parseInt(element.getElementsByTagName("년").item(0).getTextContent());
-        this.name = element.getElementsByTagName(category).item(0).getTextContent();
-        this.dealMonth = Integer.parseInt(element.getElementsByTagName("월").item(0).getTextContent());
-        this.dealDay = Integer.parseInt(element.getElementsByTagName("일").item(0).getTextContent());
-        this.exclusiveArea = Double.parseDouble(element.getElementsByTagName("전용면적").item(0).getTextContent());
-        this.lotNumberAddress = element.getElementsByTagName("지번").item(0).getTextContent();
-        this.floor = Integer.parseInt(element.getElementsByTagName("층").item(0).getTextContent());
+        this.dealAmount = ParsingUtil.getElementTextContent(element, "거래금액");
+        this.constructionYear = Integer.parseInt(ParsingUtil.getElementTextContent(element, "건축년도"));
+        this.dealYear = Integer.parseInt(ParsingUtil.getElementTextContent(element, "년"));
+        this.name = ParsingUtil.getElementTextContent(element, category);
+        this.dealMonth = Integer.parseInt(ParsingUtil.getElementTextContent(element, "월"));
+        this.dealDay = Integer.parseInt(ParsingUtil.getElementTextContent(element, "일"));
+        this.exclusiveArea = Double.parseDouble(ParsingUtil.getElementTextContent(element, "전용면적"));
+        this.lotNumberAddress = ParsingUtil.getElementTextContent(element, "지번");
+        this.floor = Integer.parseInt(ParsingUtil.getElementTextContent(element, "층"));
         this.isApartmentTrading = "아파트".equals(category);
-        this.legalDong = element.getElementsByTagName("법정동").item(0).getTextContent().trim();
+        this.legalDong = ParsingUtil.getElementTextContent(element, "법정동");
     }
 
     public void setGeoCodingRes(GeocodingRes geoCodingRes) {
