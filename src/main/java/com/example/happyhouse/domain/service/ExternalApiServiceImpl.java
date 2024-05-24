@@ -108,17 +108,6 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         return tradeList;
     }
 
-    private List<TradeRes> fetchTradeData(String category, String legalCode, String endPoint, String searchDate, String si) throws IOException {
-        String urlBuilder = endPoint +
-                "?serviceKey=" + externalDataKey +
-                "&LAWD_CD=" + legalCode.substring(0, 5) +
-                "&DEAL_YMD=" + searchDate;
-
-        String response = fetchDataFromAPI(urlBuilder);
-
-        return parseXmlResponse(response, category, si);
-    }
-
     private String fetchDataFromAPI(String path) throws IOException {
         URL url = new URL(path);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -145,8 +134,27 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         return sb.toString();
     }
 
-    private List<TradeRes> parseXmlResponse(String xmlResponse, String category, String si) {
-        List<TradeRes> tradeResList = new ArrayList<>();
+    private List<TradeRes> fetchTradeData(String category, String legalCode, String endPoint, String searchDate, String si) throws IOException {
+        String url = endPoint +
+                "?serviceKey=" + externalDataKey +
+                "&LAWD_CD=" + legalCode.substring(0, 5) +
+                "&DEAL_YMD=" + searchDate;
+
+        String response = fetchDataFromAPI(url);
+        List<Element> items = parseXmlResponse(response);
+        List<TradeRes> trades = items.stream().map(item -> new TradeRes(item, category)).toList();
+        for (TradeRes trade : trades) {
+            String address = si + " " + trade.getLegalDong() + " " + trade.getName();
+            GeocodingRes geocodingRes = getGeocoding(address);
+
+            trade.setGeoCodingRes(geocodingRes);
+        }
+
+        return trades;
+    }
+
+    private List<Element> parseXmlResponse(String xmlResponse) {
+        List<Element> items = new ArrayList<>();
 
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -161,30 +169,13 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
-
-                    String dealAmount = eElement.getElementsByTagName("거래금액").item(0).getTextContent().trim();
-                    int constructionYear = Integer.parseInt(eElement.getElementsByTagName("건축년도").item(0).getTextContent());
-                    int dealYear = Integer.parseInt(eElement.getElementsByTagName("년").item(0).getTextContent());
-                    String name = eElement.getElementsByTagName(category).item(0).getTextContent();
-                    int dealMonth = Integer.parseInt(eElement.getElementsByTagName("월").item(0).getTextContent());
-                    int dealDay = Integer.parseInt(eElement.getElementsByTagName("일").item(0).getTextContent());
-                    double exclusiveArea = Double.parseDouble(eElement.getElementsByTagName("전용면적").item(0).getTextContent());
-                    String lotNumberAddress = eElement.getElementsByTagName("지번").item(0).getTextContent();
-                    int floor = Integer.parseInt(eElement.getElementsByTagName("층").item(0).getTextContent());
-                    boolean isApartmentTrading = "아파트".equals(category);
-
-                    String legalDong = eElement.getElementsByTagName("법정동").item(0).getTextContent().trim();
-
-                    GeocodingRes geocodingRes = getGeocoding(si + " " + legalDong + " " + name);
-
-                    TradeRes res = new TradeRes(dealAmount, constructionYear, dealYear, dealMonth, dealDay, name, exclusiveArea, lotNumberAddress, floor, isApartmentTrading, geocodingRes);
-                    tradeResList.add(res);
+                    items.add(eElement);
                 }
             }
         } catch (Exception e) {
             log.warn(e.getMessage());
         }
 
-        return tradeResList;
+        return items;
     }
 }

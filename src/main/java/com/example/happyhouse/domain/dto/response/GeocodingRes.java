@@ -8,13 +8,15 @@ public class GeocodingRes {
     String lng;
     String formattedAddress;
 
+    public GeocodingRes() {}
+
     public GeocodingRes(String lat, String lng, String formattedAddress) {
         this.lat = lat;
         this.lng = lng;
         this.formattedAddress = formattedAddress;
     }
 
-    public GeocodingRes(GeocodingRes geocodingRes) {
+    public void setGeoCodingRes(GeocodingRes geocodingRes) {
         this.lat = geocodingRes.getLat();
         this.lng = geocodingRes.getLng();
         this.formattedAddress = geocodingRes.getFormattedAddress();
