@@ -2,21 +2,21 @@ package com.example.happyhouse.domain.service;
 
 import com.example.happyhouse.domain.dto.request.TradeReq;
 import com.example.happyhouse.domain.dto.response.GeocodingRes;
+import com.example.happyhouse.domain.dto.response.InformationRes;
 import com.example.happyhouse.domain.dto.response.TradeRes;
+import com.example.happyhouse.domain.entity.Apartment;
+import com.example.happyhouse.domain.repository.ApartmentRepository;
+import com.example.happyhouse.util.ParsingUtil;
 import com.example.happyhouse.util.Util;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.Document;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -28,6 +28,7 @@ import java.util.List;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ExternalApiServiceImpl implements ExternalApiService {
 
     @Value("${external.google.key}")
@@ -44,6 +45,11 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
     @Value("${external.data.house-trade.endpoint}")
     private String externalDataHouseTradeEndpoint;
+
+    @Value("${external.data.apt-list.sigungu.endpoint}")
+    private String externalDataAptListSigunguEndpoint;
+
+    private final ApartmentRepository apartmentRepository;
 
     @Override
     public GeocodingRes getGeocoding(String address) throws IOException {
@@ -108,6 +114,30 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         return tradeList;
     }
 
+    @Override
+    @Transactional
+    public List<InformationRes> getInformation(TradeReq tradeReq) throws IOException {
+        List<Apartment> apartments = apartmentRepository.findByLegalDongCodeStartingWith(tradeReq.getLegalCode().substring(0, 5));
+        if (apartments.isEmpty()) {
+            String url = externalDataAptListSigunguEndpoint +
+                    "?serviceKey=" + externalDataKey +
+                    "&sigunguCode=" + tradeReq.getLegalCode().substring(0, 5) +
+                    "&numOfRows=10000";
+
+            String response = fetchDataFromAPI(url);
+            List<Element> items = ParsingUtil.parseXmlResponse(response);
+            apartments = items.stream().map(Apartment::new).toList();
+            apartmentRepository.saveAll(apartments);
+        }
+
+        if (apartments.isEmpty()) {
+            return List.of();
+        }
+
+        return List.of();
+    }
+
+
     private String fetchDataFromAPI(String path) throws IOException {
         URL url = new URL(path);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -141,7 +171,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
                 "&DEAL_YMD=" + searchDate;
 
         String response = fetchDataFromAPI(url);
-        List<Element> items = parseXmlResponse(response);
+        List<Element> items = ParsingUtil.parseXmlResponse(response);
         List<TradeRes> trades = items.stream().map(item -> new TradeRes(item, category)).toList();
         for (TradeRes trade : trades) {
             String address = si + " " + trade.getLegalDong() + " " + trade.getName();
@@ -151,31 +181,5 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         }
 
         return trades;
-    }
-
-    private List<Element> parseXmlResponse(String xmlResponse) {
-        List<Element> items = new ArrayList<>();
-
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(new ByteArrayInputStream(xmlResponse.getBytes()));
-
-            doc.getDocumentElement().normalize();
-            NodeList nList = doc.getElementsByTagName("item");
-
-            for (int temp = 0; temp < nList.getLength(); temp++) {
-                Node nNode = nList.item(temp);
-
-                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element eElement = (Element) nNode;
-                    items.add(eElement);
-                }
-            }
-        } catch (Exception e) {
-            log.warn(e.getMessage());
-        }
-
-        return items;
     }
 }

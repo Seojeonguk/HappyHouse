@@ -141,3 +141,24 @@ function saveForm() {
     saveSelectOptions('gu', 'guOptions');
     saveSelectOptions('dong', 'dongOptions');
 }
+
+function getInformation({category, legalCode, si, gu, dong, year, month}) {
+    $.ajax({
+        url: "api/third/getInformation",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            category,
+            legalCode,
+            year,
+            month,
+            si
+        }),
+        success: function (response) {
+            console.log(response);
+        },
+        error: function (err) {
+            console.error(err);
+        }
+    })
+}
