@@ -81,14 +81,20 @@ function init_dong(dong) {
 function getTrade({category, legalCode, si, gu, dong, year, month}) {
     $.ajax({
         url: "api/third/getTrade",
-        type: "GET",
-        data: `category=${category}&legalCode=${legalCode}&year=${year}&month=${month}`,
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            category,
+            legalCode,
+            year,
+            month,
+            si
+        }),
         success: function (response) {
             console.log(response);
             $.each(response, async function (idx, res) {
-                const {apartmentTrading, dealAmount, dealYear, dealMonth, dealDay, exclusiveArea, name} = res;
-                const coordinate = await getCoordinate(`${si} ${gu} ${dong} ${name}`);
-                mapMarking(coordinate.lat, coordinate.lng, res, apartmentTrading ? "red" : "blue");
+                const {apartmentTrading, dealAmount, dealYear, dealMonth, dealDay, exclusiveArea, name, lat, lng} = res;
+                mapMarking(lat, lng, res, apartmentTrading ? "red" : "blue");
 
                 let div = $(`<div class="item"></div>`);
                 $(`<p class="item-name">이름 : ${name}</p>`).appendTo(div);

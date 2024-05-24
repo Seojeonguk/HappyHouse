@@ -1,5 +1,6 @@
 package com.example.happyhouse.domain.controller;
 
+import com.example.happyhouse.domain.dto.request.TradeReq;
 import com.example.happyhouse.domain.dto.response.GeocodingRes;
 import com.example.happyhouse.domain.dto.response.TradeRes;
 import com.example.happyhouse.domain.service.ExternalApiService;
@@ -27,8 +28,8 @@ public class ExternalApiController {
         return ResponseEntity.ok(externalApiService.getGoogleApiKey());
     }
 
-    @GetMapping("/getTrade")
-    public ResponseEntity<List<TradeRes>> getTrade(@RequestParam String category, @RequestParam String legalCode, @RequestParam String year, @RequestParam String month) throws IOException {
-        return ResponseEntity.ok(externalApiService.getTrade(category, legalCode, year, month));
+    @PostMapping("/getTrade")
+    public ResponseEntity<List<TradeRes>> getTrade(@RequestBody TradeReq tradeReq) throws IOException {
+        return ResponseEntity.ok(externalApiService.getTrade(tradeReq));
     }
 }

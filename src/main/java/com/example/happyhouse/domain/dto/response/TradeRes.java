@@ -1,11 +1,9 @@
 package com.example.happyhouse.domain.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 @Getter
-public class TradeRes {
+public class TradeRes extends GeocodingRes {
     private String dealAmount; // 거래금액
     private int constructionYear; // 건축년도
     private int dealYear; // 년
@@ -16,6 +14,20 @@ public class TradeRes {
     private String lotNumberAddress; // 지번
     private int floor; // 층
     private boolean isApartmentTrading;
+
+    public TradeRes(String dealAmount, int constructionYear, int dealYear, int dealMonth, int dealDay, String name, double exclusiveArea, String lotNumberAddress, int floor, boolean isApartmentTrading, GeocodingRes geocodingRes) {
+        super(geocodingRes);
+        this.dealAmount = dealAmount;
+        this.constructionYear = constructionYear;
+        this.dealYear = dealYear;
+        this.dealMonth = dealMonth;
+        this.dealDay = dealDay;
+        this.name = name;
+        this.exclusiveArea = exclusiveArea;
+        this.lotNumberAddress = lotNumberAddress;
+        this.floor = floor;
+        this.isApartmentTrading = isApartmentTrading;
+    }
 
     /* unused items in house trade
     private double landArea; // 대지권면적
