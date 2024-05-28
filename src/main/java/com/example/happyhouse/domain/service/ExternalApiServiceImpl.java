@@ -1,12 +1,18 @@
 package com.example.happyhouse.domain.service;
 
 import com.example.happyhouse.domain.dto.request.TradeReq;
+import com.example.happyhouse.domain.dto.response.ApartmentBaseInfoRes;
 import com.example.happyhouse.domain.dto.response.GeocodingRes;
-import com.example.happyhouse.domain.dto.response.InformationRes;
 import com.example.happyhouse.domain.dto.response.TradeRes;
 import com.example.happyhouse.domain.entity.Apartment;
+import com.example.happyhouse.domain.entity.ApartmentBaseInformation;
+import com.example.happyhouse.domain.entity.ApartmentDetailInformation;
+import com.example.happyhouse.domain.entity.Geocoding;
+import com.example.happyhouse.domain.repository.ApartmentBaseRepository;
+import com.example.happyhouse.domain.repository.ApartmentDetailRepository;
 import com.example.happyhouse.domain.repository.ApartmentRepository;
-import com.example.happyhouse.util.ParsingUtil;
+import com.example.happyhouse.domain.repository.GeocodingRepository;
+import com.example.happyhouse.util.Parsing;
 import com.example.happyhouse.util.Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +31,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -49,10 +57,24 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     @Value("${external.data.apt-list.sigungu.endpoint}")
     private String externalDataAptListSigunguEndpoint;
 
+    @Value("${external.data.apt-info.base.endpoint}")
+    private String externalDataAptInfoBaseEndpoint;
+
+    @Value("${external.data.apt-info.detail.endpoint}")
+    private String externalDataAptInfoDetailEndpoint;
+
     private final ApartmentRepository apartmentRepository;
+    private final ApartmentBaseRepository apartmentBaseRepository;
+    private final ApartmentDetailRepository apartmentDetailRepository;
+    private final GeocodingRepository geocodingRepository;
 
     @Override
     public GeocodingRes getGeocoding(String address) throws IOException {
+        Optional<Geocoding> geocoding = geocodingRepository.findByAddress(address);
+        if (geocoding.isPresent()) {
+            return geocoding.get().toResponse();
+        }
+
         String url = externalGoogleGeocodingEndpoint + "/json" +
                 "?address=" + address.replaceAll(" ", "+") +
                 "&key=" + externalGoogleKey +
@@ -71,7 +93,10 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         String lat = String.valueOf(location.getBigDecimal("lat"));
         String lng = String.valueOf(location.getBigDecimal("lng"));
 
-        return new GeocodingRes(lat, lng, formattedAddress);
+        Geocoding geocoding1 = new Geocoding(address, lat, lng, formattedAddress);
+        geocodingRepository.save(geocoding1);
+
+        return geocoding1.toResponse();
     }
 
     @Override
@@ -116,7 +141,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
     @Override
     @Transactional
-    public List<InformationRes> getInformation(TradeReq tradeReq) throws IOException {
+    public List<ApartmentBaseInfoRes> getInformation(TradeReq tradeReq) throws IOException {
         List<Apartment> apartments = apartmentRepository.findByLegalDongCodeStartingWith(tradeReq.getLegalCode().substring(0, 5));
         if (apartments.isEmpty()) {
             String url = externalDataAptListSigunguEndpoint +
@@ -125,7 +150,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
                     "&numOfRows=10000";
 
             String response = fetchDataFromAPI(url);
-            List<Element> items = ParsingUtil.parseXmlResponse(response);
+            List<Element> items = Parsing.parseXmlResponse(response);
             apartments = items.stream().map(Apartment::new).toList();
             apartmentRepository.saveAll(apartments);
         }
@@ -134,7 +159,22 @@ public class ExternalApiServiceImpl implements ExternalApiService {
             return List.of();
         }
 
-        return List.of();
+        List<String> complexCodes = apartments.stream().map(Apartment::getComplexCode).toList();
+        List<ApartmentBaseInformation> apartmentBaseInformations = getApartmentBaseInformations(complexCodes);
+
+        List<ApartmentBaseInfoRes> apartmentBaseInfoResList = apartmentBaseInformations.stream().map(ApartmentBaseInfoRes::new).toList();
+        apartmentBaseInfoResList.forEach(apartmentBaseInfoRes -> {
+            GeocodingRes geocodingRes = null;
+            try {
+                String address = Util.removeSuffix(apartmentBaseInfoRes.getLegalDongAddress(), apartmentBaseInfoRes.getComplexName());
+                geocodingRes = getGeocoding(address);
+                apartmentBaseInfoRes.setGeoCodingRes(geocodingRes);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        return apartmentBaseInfoResList;
     }
 
 
@@ -171,7 +211,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
                 "&DEAL_YMD=" + searchDate;
 
         String response = fetchDataFromAPI(url);
-        List<Element> items = ParsingUtil.parseXmlResponse(response);
+        List<Element> items = Parsing.parseXmlResponse(response);
         List<TradeRes> trades = items.stream().map(item -> new TradeRes(item, category)).toList();
         for (TradeRes trade : trades) {
             String address = si + " " + trade.getLegalDong() + " " + trade.getName();
@@ -181,5 +221,65 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         }
 
         return trades;
+    }
+
+    private List<ApartmentBaseInformation> getApartmentBaseInformations(List<String> complexCodes) throws IOException {
+        return complexCodes.stream()
+                .flatMap(complexCode -> {
+                    try {
+                        return getApartmentBaseInformation(complexCode).stream();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<ApartmentBaseInformation> getApartmentBaseInformation(String complexCode) throws IOException {
+        List<ApartmentBaseInformation> apartmentBaseInformations = apartmentBaseRepository.findByComplexCode(complexCode);
+        if (!apartmentBaseInformations.isEmpty()) {
+            return apartmentBaseInformations;
+        }
+
+        String url = externalDataAptInfoBaseEndpoint +
+                "?serviceKey=" + externalDataKey +
+                "&kaptCode=" + complexCode;
+
+        String response = fetchDataFromAPI(url);
+        List<Element> items = Parsing.parseXmlResponse(response);
+        apartmentBaseInformations = items.stream().map(ApartmentBaseInformation::new).toList();
+        apartmentBaseRepository.saveAll(apartmentBaseInformations);
+
+        return apartmentBaseInformations;
+    }
+
+    private List<ApartmentDetailInformation> getApartmentDetailInformations(List<String> complexCodes) throws IOException {
+        return complexCodes.stream()
+                .flatMap(complexCode -> {
+                    try {
+                        return getApartmentDetailInformation(complexCode).stream();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<ApartmentDetailInformation> getApartmentDetailInformation(String complexCode) throws IOException {
+        List<ApartmentDetailInformation> apartmentDetailInformations = apartmentDetailRepository.findByComplexCode(complexCode);
+        if (!apartmentDetailInformations.isEmpty()) {
+            return apartmentDetailInformations;
+        }
+
+        String url = externalDataAptInfoDetailEndpoint +
+                "?serviceKey=" + externalDataKey +
+                "&kaptCode=" + complexCode;
+
+        String response = fetchDataFromAPI(url);
+        List<Element> items = Parsing.parseXmlResponse(response);
+        apartmentDetailInformations = items.stream().map(ApartmentDetailInformation::new).toList();
+        apartmentDetailRepository.saveAll(apartmentDetailInformations);
+
+        return apartmentDetailInformations;
     }
 }

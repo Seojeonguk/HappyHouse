@@ -1,6 +1,6 @@
 package com.example.happyhouse.domain.dto.response;
 
-import com.example.happyhouse.util.ParsingUtil;
+import com.example.happyhouse.util.Parsing;
 import lombok.Getter;
 import org.w3c.dom.Element;
 
@@ -20,17 +20,17 @@ public class TradeRes extends GeocodingRes {
 
     public TradeRes(Element element, String category) {
         super();
-        this.dealAmount = ParsingUtil.getElementTextContent(element, "거래금액");
-        this.constructionYear = Integer.parseInt(ParsingUtil.getElementTextContent(element, "건축년도"));
-        this.dealYear = Integer.parseInt(ParsingUtil.getElementTextContent(element, "년"));
-        this.name = ParsingUtil.getElementTextContent(element, category);
-        this.dealMonth = Integer.parseInt(ParsingUtil.getElementTextContent(element, "월"));
-        this.dealDay = Integer.parseInt(ParsingUtil.getElementTextContent(element, "일"));
-        this.exclusiveArea = Double.parseDouble(ParsingUtil.getElementTextContent(element, "전용면적"));
-        this.lotNumberAddress = ParsingUtil.getElementTextContent(element, "지번");
-        this.floor = Integer.parseInt(ParsingUtil.getElementTextContent(element, "층"));
+        this.dealAmount = Parsing.getElementTextContent(element, "거래금액");
+        this.constructionYear = Integer.parseInt(Parsing.getElementTextContent(element, "건축년도"));
+        this.dealYear = Integer.parseInt(Parsing.getElementTextContent(element, "년"));
+        this.name = Parsing.getElementTextContent(element, category);
+        this.dealMonth = Integer.parseInt(Parsing.getElementTextContent(element, "월"));
+        this.dealDay = Integer.parseInt(Parsing.getElementTextContent(element, "일"));
+        this.exclusiveArea = Double.parseDouble(Parsing.getElementTextContent(element, "전용면적"));
+        this.lotNumberAddress = Parsing.getElementTextContent(element, "지번");
+        this.floor = Integer.parseInt(Parsing.getElementTextContent(element, "층"));
         this.isApartmentTrading = "아파트".equals(category);
-        this.legalDong = ParsingUtil.getElementTextContent(element, "법정동");
+        this.legalDong = Parsing.getElementTextContent(element, "법정동");
     }
 
     public void setGeoCodingRes(GeocodingRes geoCodingRes) {

@@ -156,6 +156,36 @@ function getInformation({category, legalCode, si, gu, dong, year, month}) {
         }),
         success: function (response) {
             console.log(response);
+            $.each(response, async function (idx, res) {
+                const {
+                    lat,
+                    lng,
+                    complexCategory,
+                    householdCount,
+                    approvalDate,
+                    formattedAddress,
+                    roadNameAddress,
+                    complexName,
+                    buildingCount
+                } = res;
+                //mapMarking(lat, lng, res, apartmentTrading ? "red" : "blue");
+
+                const div = $(`<div class="item"></div>`);
+                $("<p></p>").addClass("name").text(complexName).appendTo(div);
+
+                const addr = $("<div></div>").addClass("addr");
+                $("<p></p>").addClass("legalDongAddr").text(formattedAddress).appendTo(addr);
+                $("<p></p>").addClass("roadAddr").text(roadNameAddress).appendTo(addr);
+                addr.appendTo(div);
+
+                const infos = $("<div></div>").addClass("infos");
+                $("<p></p>").addClass("approvalDate").text(`${approvalDate.substring(0,4)}년`).appendTo(infos);
+                $("<p></p>").addClass("buildingCount").text(`${buildingCount}개 동`).appendTo(infos);
+                $("<p></p>").addClass("householdCount").text(`${householdCount}세대`).appendTo(infos);
+                infos.appendTo(div);
+
+                div.appendTo(".content-left");
+            });
         },
         error: function (err) {
             console.error(err);

@@ -24,4 +24,11 @@ public class Util {
         }
         return false;
     }
+
+    public static String removeSuffix(String str, String suffix) {
+        if (isEmpty(str) || isEmpty(suffix) || !str.endsWith(suffix)) {
+            return str;
+        }
+        return str.substring(0, str.length() - suffix.length()).trim();
+    }
 }
