@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class ParsingUtil {
+public class Parsing {
 
     public static List<Element> parseXmlResponse(String xmlResponse) {
         List<Element> items = new ArrayList<>();
@@ -46,6 +46,22 @@ public class ParsingUtil {
         if (nodeList.getLength() > 0) {
             return nodeList.item(0).getTextContent().trim();
         }
-        return ""; // 태그가 존재하지 않을 경우 빈 문자열 반환
+        return "";
+    }
+
+    public static Integer getElementIntContent(Element element, String tagName) {
+        String content = getElementTextContent(element, tagName);
+        if (content.isEmpty()) {
+            return null;
+        }
+        return Integer.parseInt(content);
+    }
+
+    public static Double getElementDoubleContent(Element element, String tagName) {
+        String content = getElementTextContent(element, tagName);
+        if (content.isEmpty()) {
+            return null;
+        }
+        return Double.parseDouble(content);
     }
 }

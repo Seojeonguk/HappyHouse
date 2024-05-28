@@ -46,7 +46,7 @@ function mapMarking(lat, lng, tradeInfo, color) {
         },
         map,
         content: buildContent(tradeInfo),
-        title: 'photo'
+        title: 'apt_list'
     });
 
     marker.addListener("click", () => {
