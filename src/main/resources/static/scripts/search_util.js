@@ -184,7 +184,7 @@ function getInformation({category, legalCode, si, gu, dong, year, month}) {
                 $("<p></p>").addClass("householdCount").text(`${householdCount}세대`).appendTo(infos);
                 infos.appendTo(div);
 
-                div.appendTo(".content-left");
+                div.appendTo(".search-list");
             });
         },
         error: function (err) {
