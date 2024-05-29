@@ -35,7 +35,7 @@ async function initMap(lat = 35.1595454, lng = 126.8526012) {
     });
 }
 
-function mapMarking(lat, lng, tradeInfo, color) {
+function mapMarking(lat, lng, data) {
     lat *= 1;
     lng *= 1;
 
@@ -45,7 +45,7 @@ function mapMarking(lat, lng, tradeInfo, color) {
             lng: lng
         },
         map,
-        content: buildContent(tradeInfo),
+        content: buildContent(data),
         title: 'apt_list'
     });
 
@@ -92,52 +92,40 @@ function toggleHighlight(markerView) {
     }
 }
 
-function buildContent(tradeInfo) {
+function buildContent(data) {
+    const {complexName, complexCategory, householdCount, formattedAddress, approvalDate, buildingCount} = data;
+    const approvalYear = approvalDate.substring(0, 4);
     const content = document.createElement("div");
     content.classList.add('property');
 
-    const icon = $("<div></div>").addClass("icon");
-    $("<i></i>").attr('aria-hidden', 'true').attr('title', 'home')
-        .addClass("fa").addClass("fa-icon").addClass("fa-solid").addClass(tradeInfo.apartmentTrading ? "fa-building" : "fa-home")
-        .appendTo(icon);
-    $("<span></span>").addClass('sr-only').html('home').appendTo(icon);
-
-    icon.appendTo(content);
+    createIcon('icon', complexCategory === "아파트" ? "fa-building" : "fa-home", content, false);
 
     const details = $("<div></div>").addClass("details");
-    $("<div></div>").addClass("name").html(tradeInfo.name).appendTo(details);
-    $("<div></div>").addClass("address").html(tradeInfo.formattedAddress).appendTo(details);
-    $("<div></div>").addClass("price").html(tradeInfo.dealAmount).appendTo(details);
-    $("<div></div>").addClass("dealDay").html(`${tradeInfo.dealYear}.${tradeInfo.dealMonth}.${tradeInfo.dealDay}`).appendTo(details);
+    $("<div></div>").addClass("name").html(complexName).appendTo(details);
+    $("<div></div>").addClass("address").html(formattedAddress).appendTo(details);
+    $("<div></div>").addClass("dealDay").html(approvalDate).appendTo(details);
+    $("<div></div>").addClass("householdCnt").html(householdCount).appendTo(details);
 
     const features = $("<div></div>").addClass("features");
-    // constructionYear exclusiveArea floor
-    const constructionYear = $("<div></div>").addClass("constructionYear");
-    $("<i></i>").attr('aria-hidden','true').attr('title','constructionYear')
-        .addClass('fa').addClass('fa-icons').addClass('fa-calendar').addClass('fa-regular')
-        .appendTo(constructionYear);
-    $("<span></span>").addClass('sr-only').html(tradeInfo.constructionYear).appendTo(constructionYear);
-    $("<span></span>").html(tradeInfo.constructionYear).appendTo(constructionYear);
-    constructionYear.appendTo(features);
-
-    const exclusiveArea = $("<div></div>").addClass("exclusiveArea");
-    $("<i></i>").attr('aria-hidden','true').attr('title','exclusiveArea')
-        .addClass('fa').addClass('fa-icons').addClass('fa-ruler')
-        .appendTo(exclusiveArea);
-    $("<span></span>").addClass('sr-only').html(tradeInfo.exclusiveArea).appendTo(exclusiveArea);
-    $("<span></span>").html(tradeInfo.exclusiveArea).appendTo(exclusiveArea);
-    exclusiveArea.appendTo(features);
-
-    const floor = $("<div></div>").addClass("floor");
-    $("<i></i>").attr('aria-hidden','true').attr('title','floor')
-        .addClass('fa').addClass('fa-icons').addClass('fa-layer-group')
-        .appendTo(floor);
-    $("<span></span>").addClass('sr-only').html(tradeInfo.floor).appendTo(floor);
-    $("<span></span>").html(tradeInfo.floor).appendTo(floor);
-    floor.appendTo(features);
+    createIcon(approvalYear, 'fa-calendar', features, true);
+    createIcon(buildingCount, 'fa-layer-group', features, true);
+    createIcon(householdCount, 'fa-calendar', features, true);
 
     features.appendTo(details);
     details.appendTo(content);
 
     return content;
+}
+
+function createIcon(name, icon, parent, isAddText) {
+    const div = $("<div></div>").addClass(name);
+    $("<i></i>").attr('aria-hidden', 'true').attr('title', name)
+        .addClass('fa').addClass('fa-icon').addClass(icon)
+        .appendTo(div);
+    $("<span></span>").addClass('sr-only').html(name).appendTo(div);
+    if (isAddText) {
+        $("<span></span>").html(name).appendTo(div);
+    }
+
+    div.appendTo(parent);
 }
