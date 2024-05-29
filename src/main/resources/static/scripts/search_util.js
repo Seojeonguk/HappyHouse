@@ -142,7 +142,7 @@ function saveForm() {
     saveSelectOptions('dong', 'dongOptions');
 }
 
-function getInformation({category, legalCode, si, gu, dong, year, month}) {
+function getInformation({category, legalCode, si, year, month}) {
     $.ajax({
         url: "api/third/getInformation",
         type: "POST",
@@ -168,7 +168,7 @@ function getInformation({category, legalCode, si, gu, dong, year, month}) {
                     complexName,
                     buildingCount
                 } = res;
-                //mapMarking(lat, lng, res, apartmentTrading ? "red" : "blue");
+                mapMarking(lat, lng, res);
 
                 const div = $(`<div class="item"></div>`);
                 $("<p></p>").addClass("name").text(complexName).appendTo(div);
@@ -179,7 +179,7 @@ function getInformation({category, legalCode, si, gu, dong, year, month}) {
                 addr.appendTo(div);
 
                 const infos = $("<div></div>").addClass("infos");
-                $("<p></p>").addClass("approvalDate").text(`${approvalDate.substring(0,4)}년`).appendTo(infos);
+                $("<p></p>").addClass("approvalDate").text(`${approvalDate.substring(0, 4)}년`).appendTo(infos);
                 $("<p></p>").addClass("buildingCount").text(`${buildingCount}개 동`).appendTo(infos);
                 $("<p></p>").addClass("householdCount").text(`${householdCount}세대`).appendTo(infos);
                 infos.appendTo(div);
