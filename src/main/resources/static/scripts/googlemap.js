@@ -103,8 +103,6 @@ function buildContent(data) {
     const details = $("<div></div>").addClass("details");
     $("<div></div>").addClass("name").html(complexName).appendTo(details);
     $("<div></div>").addClass("address").html(formattedAddress).appendTo(details);
-    $("<div></div>").addClass("dealDay").html(approvalDate).appendTo(details);
-    $("<div></div>").addClass("householdCnt").html(householdCount).appendTo(details);
 
     const features = $("<div></div>").addClass("features");
     createIcon(approvalYear, 'fa-calendar', features, true);
