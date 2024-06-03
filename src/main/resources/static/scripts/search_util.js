@@ -160,7 +160,7 @@ function getInformation({category, legalCode, si, year, month}) {
                 const {
                     lat,
                     lng,
-                    complexCategory,
+                    complexCode,
                     householdCount,
                     approvalDate,
                     formattedAddress,
@@ -170,7 +170,7 @@ function getInformation({category, legalCode, si, year, month}) {
                 } = res;
                 mapMarking(lat, lng, res);
 
-                const div = $(`<div class="item"></div>`);
+                const div = $(`<div class="item"></div>`).attr('complexCode', complexCode);
                 $("<p></p>").addClass("name").text(complexName).appendTo(div);
 
                 const addr = $("<div></div>").addClass("addr");
@@ -184,6 +184,10 @@ function getInformation({category, legalCode, si, year, month}) {
                 $("<p></p>").addClass("householdCount").text(`${householdCount}세대`).appendTo(infos);
                 infos.appendTo(div);
 
+                $(div).on("click", function () {
+                    getDetailInformation(complexCode, res);
+                });
+
                 div.appendTo(".search-list");
             });
         },
@@ -191,4 +195,125 @@ function getInformation({category, legalCode, si, year, month}) {
             console.error(err);
         }
     })
+}
+
+function getDetailInformation(complexCode, res) {
+    $.ajax({
+        url: "api/third/getDetailInformation",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            complexCode
+        }),
+        success: function (response) {
+            console.log(response);
+            showDetailInformation(response, res);
+        },
+        error: function (err) {
+            console.error(err);
+        }
+    })
+}
+
+function showDetailInformation({
+                                   auxiliaryFacilities,
+                                   busStopDistance,
+                                   convenienceFacilities,
+                                   complexName,
+                                   educationalFacilities,
+                                   groundParkingSpaces,
+                                   numberOfCCTVs,
+                                   numberOfElevators,
+                                   subwayLine,
+                                   subwayStationDistance,
+                                   subwayStationName,
+                                   undergroundParkingSpaces
+                               },
+                               res) {
+    const {
+        formattedAddress,
+        managementOfficeContact,
+        managementOfficeFax,
+        website,
+        roadNameAddress,
+        heatingType,
+        constructor
+    } = res;
+    const searchList = $(".search-list");
+
+    const div = $("<div></div>").addClass("detail-info");
+
+    const topDiv = $("<div></div>").addClass("title").appendTo(div);
+    $("<p></p>").addClass("name").html(complexName).appendTo(topDiv);
+    const icon = createIcon("back", "fa-times", topDiv, false);
+
+    $(icon).on("click", function () {
+        $(".detail-info").remove();
+        searchList.removeClass("hide");
+    });
+
+    const content = $("<div></div>").addClass("detail-content").appendTo(div);
+    createDetailDiv("place", [
+        createDetailObjects("place", "fa-map-marker-alt", formattedAddress)
+    ], content);
+
+    createDetailDiv("transport", [
+        createDetailObjects("subway", "fa-subway", subwayLine, subwayStationDistance, subwayStationName),
+        createDetailObjects("bus", "fa-bus", busStopDistance)
+    ], content);
+
+    createDetailDiv("contact", [
+        createDetailObjects("phone", "fa-phone", managementOfficeContact),
+        createDetailObjects("fax", "fa-fax", managementOfficeFax),
+        createDetailObjects("website", "fa-globe", website)
+    ], content);
+
+    createDetailDiv("detail", [
+        createDetailObjects("heatingType", "fa-fire", heatingType),
+        createDetailObjects("constructor", "fa-tractor", constructor),
+        createDetailObjects("parking", "fa-parking", `지상 : ${groundParkingSpaces}`, `지하 : ${undergroundParkingSpaces}`),
+        createDetailObjects("cctv", "fa-video", `총 : ${numberOfCCTVs}`),
+        createDetailObjects("elevator", "fa-tram", `총 : ${numberOfElevators}`),
+        createDetailObjects("auxiliary", "fa-place-of-worship", auxiliaryFacilities),
+        createDetailObjects("convenience", "fa-store", convenienceFacilities),
+        createDetailObjects("education", "fa-school", educationalFacilities)
+    ], content);
+
+    searchList.addClass("hide");
+
+    const search = $(".search");
+    div.appendTo(search);
+}
+
+function createDetailObjects(iconName, iconPath, ...args) {
+    return {
+        "icon": {
+            "name": iconName,
+            "path": iconPath
+        },
+        "contents": args.filter(arg => !isEmpty(arg))
+    }
+}
+
+function createDetailDiv(className, items, parent) {
+    const div = $("<div></div>").addClass(className).addClass("detail").appendTo(parent);
+
+    items.forEach(function (item, index) {
+        const {icon, contents} = item;
+        const {name, path} = icon;
+
+        if(isEmpty(contents)) {
+            return;
+        }
+
+        const rowDiv = $("<div></div>").addClass("row").appendTo(div);
+        createIcon("icon", path, rowDiv, false);
+        const pDiv = $("<div></div>").appendTo(rowDiv);
+        contents.forEach(function (content, index) {
+            const childDiv = $("<div></div>").appendTo(pDiv);
+            $("<p></p>").html(content).appendTo(childDiv);
+        })
+    });
+
+    return div;
 }

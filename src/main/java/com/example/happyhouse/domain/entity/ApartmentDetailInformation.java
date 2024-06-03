@@ -37,17 +37,39 @@ public class ApartmentDetailInformation {
     private String fireReceiverType; // codeFalarm 화재수신반방식
     private String waterSupplyMethod; // codeWsupply 급수방식
     private String elevatorManagementType; // codeElev 승강기관리형태
+
+    @Getter
     private Integer numberOfElevators; // kaptdEcnt 승강기대수
+
+    @Getter
     private Integer groundParkingSpaces; // kaptdPcnt 주차대수(지상)
+
+    @Getter
     private Integer undergroundParkingSpaces; // kaptdPcntu 주차대수(지하)
     private String parkingControlAndHomeNetwork; // codeNet 주차관제.홈네트워크
+
+    @Getter
     private Integer numberOfCCTVs; // kaptdCccnt CCTV대수
+
+    @Getter
     private String auxiliaryFacilities; // welfareFacility 부대.복리시설
+
+    @Getter
     private String busStopDistance; // kaptdWtimebus 버스정류장 거리
+
+    @Getter
     private String subwayLine; // subwayLine 지하철호선
+
+    @Getter
     private String subwayStationName; // subwayStation 지하철역명
+
+    @Getter
     private String subwayStationDistance; // kaptdWtimesub 지하철역 거리
+
+    @Getter
     private String convenienceFacilities; // convenientFacility 편의시설
+
+    @Getter
     private String educationalFacilities; // educationFacility 교육시설
 
     @OneToOne(mappedBy = "apartmentDetailInformation")
@@ -75,7 +97,7 @@ public class ApartmentDetailInformation {
         this.fireReceiverType = Parsing.getElementTextContent(e, "codeFalarm");
         this.waterSupplyMethod = Parsing.getElementTextContent(e, "codeWsupply");
         this.elevatorManagementType = Parsing.getElementTextContent(e, "codeElev");
-        this.numberOfElevators = Parsing.getElementIntContent(e, "kaptEcnt");
+        this.numberOfElevators = Parsing.getElementIntContent(e, "kaptdEcnt");
         this.groundParkingSpaces = Parsing.getElementIntContent(e, "kaptdPcnt");
         this.undergroundParkingSpaces = Parsing.getElementIntContent(e, "kaptdPcntu");
         this.parkingControlAndHomeNetwork = Parsing.getElementTextContent(e, "codeNet");
@@ -88,5 +110,4 @@ public class ApartmentDetailInformation {
         this.convenienceFacilities = Parsing.getElementTextContent(e, "convenientFacility");
         this.educationalFacilities = Parsing.getElementTextContent(e, "educationFacility");
     }
-
 }

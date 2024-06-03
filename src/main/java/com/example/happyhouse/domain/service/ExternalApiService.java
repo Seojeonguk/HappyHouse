@@ -1,7 +1,9 @@
 package com.example.happyhouse.domain.service;
 
+import com.example.happyhouse.domain.dto.request.ApartmentDetailInfoReq;
 import com.example.happyhouse.domain.dto.request.TradeReq;
 import com.example.happyhouse.domain.dto.response.ApartmentBaseInfoRes;
+import com.example.happyhouse.domain.dto.response.ApartmentDetailInfoRes;
 import com.example.happyhouse.domain.dto.response.GeocodingRes;
 import com.example.happyhouse.domain.dto.response.TradeRes;
 
@@ -16,4 +18,6 @@ public interface ExternalApiService {
     List<TradeRes> getTrade(TradeReq tradeReq) throws IOException;
 
     List<ApartmentBaseInfoRes> getInformation(TradeReq tradeReq) throws IOException;
+
+    ApartmentDetailInfoRes getDetailInformation(ApartmentDetailInfoReq apartmentDetailInfoReq) throws IOException;
 }

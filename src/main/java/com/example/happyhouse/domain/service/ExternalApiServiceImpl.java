@@ -1,7 +1,9 @@
 package com.example.happyhouse.domain.service;
 
+import com.example.happyhouse.domain.dto.request.ApartmentDetailInfoReq;
 import com.example.happyhouse.domain.dto.request.TradeReq;
 import com.example.happyhouse.domain.dto.response.ApartmentBaseInfoRes;
+import com.example.happyhouse.domain.dto.response.ApartmentDetailInfoRes;
 import com.example.happyhouse.domain.dto.response.GeocodingRes;
 import com.example.happyhouse.domain.dto.response.TradeRes;
 import com.example.happyhouse.domain.entity.Apartment;
@@ -175,6 +177,26 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         });
 
         return apartmentBaseInfoResList;
+    }
+
+    @Override
+    public ApartmentDetailInfoRes getDetailInformation(ApartmentDetailInfoReq apartmentDetailInfoReq) throws IOException {
+        String complexCode = apartmentDetailInfoReq.getComplexCode();
+        List<ApartmentDetailInformation> apartmentDetailInformations = apartmentDetailRepository.findByComplexCode(complexCode);
+        if (!apartmentDetailInformations.isEmpty()) {
+            return new ApartmentDetailInfoRes(apartmentDetailInformations.get(0));
+        }
+
+        String url = externalDataAptInfoDetailEndpoint +
+                "?serviceKey=" + externalDataKey +
+                "&kaptCode=" + complexCode;
+
+        String response = fetchDataFromAPI(url);
+        List<Element> items = Parsing.parseXmlResponse(response);
+        apartmentDetailInformations = items.stream().map(ApartmentDetailInformation::new).toList();
+        apartmentDetailRepository.saveAll(apartmentDetailInformations);
+
+        return new ApartmentDetailInfoRes(apartmentDetailInformations.get(0));
     }
 
 

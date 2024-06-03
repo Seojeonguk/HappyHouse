@@ -144,7 +144,7 @@ body {
     width: 70%;
 }
 
-.search p {
+.search .search-list .item p {
     margin-bottom: 0;
     padding: 8px;
     line-height: 1.2;
@@ -153,8 +153,15 @@ body {
 .search .search-list .item {
     font-size: 0.8em;
     border-bottom: 1px solid #eee;
-    padding: 10px 0;
-    margin: 0 15px;
+    padding: 10px 15px;
+}
+
+.search .search-list .item:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.search .search-list .item:hover > .name {
+    text-decoration: underline;
 }
 
 .search .search-list .item .name {
@@ -340,4 +347,56 @@ body {
 
 .property:not(.highlight):has(.fa-building)::after {
     border-top: 9px solid var(--building-color);
+}
+
+.hide {
+    display: none;
+}
+
+.detail-info .title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 22px;
+    padding-left: 10px;
+}
+
+.detail-info .title p {
+    font-weight: bold;
+}
+
+.detail-info .title .back {
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.detail-info .detail-content {
+    padding: 15px;
+    letter-spacing: -0.3px;
+    line-height: 2rem;
+    font-size: 1.1rem;
+}
+
+.detail-info .detail:not(:first-child) {
+    margin-top: 16px;
+}
+
+.detail .icon {
+    color: rgba(197, 197, 199);
+}
+
+.row > div:first-child {
+    width: 20px;
+    height: 20px;
+    float: left;
+    margin-right: 8px;
+}
+
+.row > div:nth-child(2) {
+    overflow: hidden;
+    word-break: break-all;
+    word-wrap: break-word;
 }
