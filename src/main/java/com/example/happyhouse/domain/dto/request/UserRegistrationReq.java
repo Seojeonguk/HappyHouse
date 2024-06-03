@@ -1,5 +1,6 @@
 package com.example.happyhouse.domain.dto.request;
 
+import com.example.happyhouse.domain.entity.RoleType;
 import com.example.happyhouse.domain.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ public class UserRegistrationReq {
     String name;
     String addr;
     String tel;
+    RoleType role;
 
     public User toEntity() {
         return User.builder()
@@ -20,6 +22,7 @@ public class UserRegistrationReq {
                 .name(name)
                 .addr(addr)
                 .tel(tel)
+                .role(role)
                 .build();
     }
 }

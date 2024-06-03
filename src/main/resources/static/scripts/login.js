@@ -18,8 +18,9 @@ $(function () {
                 loginId: id,
                 pw: pw
             }),
-            success: function () {
-                window.location = "index.html";
+            success: function (res) {
+                console.log(res);
+                //window.location = "index.html";
             },
             error: function (err) {
                 console.error(err);
