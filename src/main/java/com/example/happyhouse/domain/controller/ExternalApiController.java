@@ -1,7 +1,9 @@
 package com.example.happyhouse.domain.controller;
 
+import com.example.happyhouse.domain.dto.request.ApartmentDetailInfoReq;
 import com.example.happyhouse.domain.dto.request.TradeReq;
 import com.example.happyhouse.domain.dto.response.ApartmentBaseInfoRes;
+import com.example.happyhouse.domain.dto.response.ApartmentDetailInfoRes;
 import com.example.happyhouse.domain.dto.response.GeocodingRes;
 import com.example.happyhouse.domain.dto.response.TradeRes;
 import com.example.happyhouse.domain.service.ExternalApiService;
@@ -37,5 +39,10 @@ public class ExternalApiController {
     @PostMapping("/getInformation")
     public ResponseEntity<List<ApartmentBaseInfoRes>> getInformation(@RequestBody TradeReq tradeReq) throws IOException {
         return ResponseEntity.ok(externalApiService.getInformation(tradeReq));
+    }
+
+    @PostMapping("/getDetailInformation")
+    public ResponseEntity<ApartmentDetailInfoRes> getDetailInformation(@RequestBody ApartmentDetailInfoReq apartmentDetailInfoReq) throws IOException {
+        return ResponseEntity.ok(externalApiService.getDetailInformation(apartmentDetailInfoReq));
     }
 }

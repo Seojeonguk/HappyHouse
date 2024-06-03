@@ -7,7 +7,7 @@ function loadGoogleMap() {
         type: "POST",
         success: function (key) {
             let script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap`;
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap&loading=async`;
             script.async = true;
 
             document.head.appendChild(script);
@@ -26,10 +26,7 @@ async function initMap(lat = 35.1595454, lng = 126.8526012) {
     const {AdvancedMarkerElement, PinElement} = await google.maps.importLibrary("marker");
 
     map = new Map(document.getElementById("map"), {
-        center: {
-            lat: lat,
-            lng: lng
-        },
+        center: {lat: lat, lng: lng},
         zoom: 11,
         mapId: 'map'
     });
@@ -52,18 +49,6 @@ function mapMarking(lat, lng, data) {
     marker.addListener("click", () => {
         toggleHighlight(marker);
     });
-
-    /*
-    let tradeInfoContent = new google.maps.InfoWindow({
-        content: `${tradeInfo.name}<br/>면적 : ${tradeInfo.exclusiveArea}${String.fromCodePoint(0x33A0)}<br/>건축연도 : ${tradeInfo.constructionYear}<br/>가격 : ${tradeInfo.dealAmount}`,
-        size: new google.maps.Size(50, 50)
-    });
-
-    google.maps.event.addListener(marker, 'click', function () { // 이벤트 등록
-        tradeInfoContent.open(map, marker);
-    });
-
-     */
 }
 
 function getCoordinate(address) {
@@ -115,15 +100,3 @@ function buildContent(data) {
     return content;
 }
 
-function createIcon(name, icon, parent, isAddText) {
-    const div = $("<div></div>").addClass(name);
-    $("<i></i>").attr('aria-hidden', 'true').attr('title', name)
-        .addClass('fa').addClass('fa-icon').addClass(icon)
-        .appendTo(div);
-    $("<span></span>").addClass('sr-only').html(name).appendTo(div);
-    if (isAddText) {
-        $("<span></span>").html(name).appendTo(div);
-    }
-
-    div.appendTo(parent);
-}

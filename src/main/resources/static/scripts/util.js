@@ -62,8 +62,8 @@ function populateSelectOptions(selectId, storageKey, selectedValue) {
         select.empty();
         options.forEach(option => {
             const optionElement = $('<option></option>').attr('value', option.value).attr('legalCode', option.legalCode).text(option.text);
-            if(selectedValue && selectedValue === option.value) {
-                optionElement.attr('selected','selected');
+            if (selectedValue && selectedValue === option.value) {
+                optionElement.attr('selected', 'selected');
             }
 
             select.append(optionElement);
@@ -72,4 +72,19 @@ function populateSelectOptions(selectId, storageKey, selectedValue) {
     }
 
     return false;
+}
+
+function createIcon(name, icon, parent, isAddText) {
+    const div = $("<div></div>").addClass(name);
+    $("<i></i>").attr('aria-hidden', 'true').attr('title', name)
+        .addClass('fa').addClass('fa-icon').addClass(icon).addClass('fa-fw')
+        .appendTo(div);
+    $("<span></span>").addClass('sr-only').html(name).appendTo(div);
+    if (isAddText) {
+        $("<span></span>").html(name).appendTo(div);
+    }
+
+    div.appendTo(parent);
+
+    return div;
 }
