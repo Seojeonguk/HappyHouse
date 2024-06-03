@@ -2,6 +2,7 @@ package com.example.happyhouse.domain.controller;
 
 import com.example.happyhouse.domain.dto.request.LoginReq;
 import com.example.happyhouse.domain.dto.request.UserRegistrationReq;
+import com.example.happyhouse.domain.dto.response.TokenRes;
 import com.example.happyhouse.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginReq loginReq) {
+    public ResponseEntity<TokenRes> login(@RequestBody LoginReq loginReq) {
         return ResponseEntity.ok().body(userService.login(loginReq));
     }
 }
