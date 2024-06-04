@@ -3,6 +3,7 @@ package com.example.happyhouse.domain.service;
 import com.example.happyhouse.domain.dto.request.LoginReq;
 import com.example.happyhouse.domain.dto.request.UserRegistrationReq;
 import com.example.happyhouse.domain.dto.response.TokenRes;
+import com.example.happyhouse.domain.dto.response.UserInfoRes;
 import com.example.happyhouse.domain.entity.RefreshToken;
 import com.example.happyhouse.domain.entity.User;
 import com.example.happyhouse.domain.repository.RefreshTokenRepository;
@@ -11,6 +12,7 @@ import com.example.happyhouse.util.Jwt;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -58,5 +60,12 @@ public class UserServiceImpl implements UserService {
         refreshTokenRepository.save(refreshToken);
 
         return tokenRes;
+    }
+
+    @Override
+    public UserInfoRes getMyInfo(Authentication authentication) {
+        String loginId = authentication.getName();
+        User user = userRepository.findByLoginId(loginId).orElseThrow(() -> new BadCredentialsException(loginId + " not found"));
+        return new UserInfoRes(user);
     }
 }
