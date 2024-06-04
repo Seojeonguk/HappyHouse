@@ -6,17 +6,11 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -34,22 +28,6 @@ public class Jwt {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public Authentication getAuthentication(String accessToken) {
-        Claims claims = parseClaims(accessToken);
-
-        if(claims.get("role") == null) {
-            throw new RuntimeException("No role found");
-        }
-
-        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("role").toString().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .toList();
-
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
-
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
-    }
-
     public String getLoginId(String token) {
         return parseClaims(token).getSubject();
     }
@@ -61,15 +39,15 @@ public class Jwt {
         Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
 
         String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())       // payload "sub": "name"
-                .claim("role", authorities)        // payload "auth": "ROLE_USER"
-                .setExpiration(accessTokenExpiresIn)        // payload "exp": 1516239022 (예시)
-                .signWith(key, SignatureAlgorithm.HS512)    // header "alg": "HS512"
+                .setSubject(authentication.getName())
+                .claim("role", authorities)
+                .setExpiration(accessTokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
 
-        // Refresh Token 생성
         String refreshToken = Jwts.builder()
                 .setExpiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
+                .setSubject(authentication.getName())
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
 
@@ -94,6 +72,8 @@ public class Jwt {
             log.info("Unsupported JWT token", e);
         } catch (IllegalArgumentException e) {
             log.info("JWT claims string is empty", e);
+        } catch (Exception e) {
+            log.info("Exception JWT token", e);
         }
         return false;
     }
