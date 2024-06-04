@@ -1,5 +1,6 @@
 $(document).ready(function() {
-	
+	setHeader();
+
 	// 폼에 데이터 입력
 	var myID = localStorage.getItem('loginID');
 	var data = JSON.parse(localStorage.getItem(myID));

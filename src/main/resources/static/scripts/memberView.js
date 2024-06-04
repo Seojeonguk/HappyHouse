@@ -1,4 +1,5 @@
 $(function() {
+	setHeader();
 
 	var myID = localStorage.getItem('loginID');
 	var data = JSON.parse(localStorage.getItem(myID));

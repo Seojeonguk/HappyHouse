@@ -1,4 +1,5 @@
 $(function () {
+    setHeader();
 
     $("#loginBtn").on("click", function () {
 
@@ -19,8 +20,13 @@ $(function () {
                 pw: pw
             }),
             success: function (res) {
-                console.log(res);
-                //window.location = "index.html";
+                const {accessToken, refreshToken, grantType, accessTokenExpire} = res;
+                localStorage.setItem("accessToken",accessToken);
+                localStorage.setItem("refreshToken",refreshToken);
+                localStorage.setItem("grantType",grantType);
+                localStorage.setItem("accessTokenExpire",accessTokenExpire);
+
+                window.location = "index.html";
             },
             error: function (err) {
                 console.error(err);
