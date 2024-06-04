@@ -1,6 +1,7 @@
 $(function () {
     setHeader();
     getMyInfo();
+    deleteUserBtn();
 
     // 확인버튼
     $("#btnClose").on("click", function () {
@@ -12,21 +13,10 @@ $(function () {
         window.location.href = "memberUpdate.html";
     });
 
-    // 탈퇴버튼
-    $("#btnDelete").on("click", function () {
-        const accessToken = localStorage.getItem("accessToken");
-        var res = confirm("탈퇴하시겠습니까?");
-        if (res) { //확인
-            localStorage.removeItem(myID);
-            localStorage.removeItem('loginID');
-            alert("탈퇴 되었습니다. 감사합니다.")
-        }
 
-        window.location.href = "index.html";
-    });
 });
 
-function getMyInfo() {
+function getMyInfo(isCallback = false) {
     const accessToken = localStorage.getItem("accessToken");
     if (isEmpty(accessToken)) {
         return;
@@ -50,7 +40,47 @@ function getMyInfo() {
             $("#addr").html(addr);
         },
         error: function (err) {
-            console.error(err);
+            if (isCallback) {
+                console.error(err);
+                return;
+            }
+
+            refreshAccessToken(getMyInfo);
         }
     })
 }
+
+function deleteUserBtn(isCallback = false) {
+    const accessToken = localStorage.getItem("accessToken");
+    if (isEmpty(accessToken)) {
+        window.location.href = "index.html";
+    }
+
+    $("#btnDelete").on("click", function () {
+        $.ajax({
+            url: `/api/user`,
+            type: "DELETE",
+            beforeSend: function (xhr) {
+                const grantType = localStorage.getItem("grantType");
+                if (isEmpty(grantType)) {
+                    return;
+                }
+                xhr.setRequestHeader("Authorization", `${grantType} ${accessToken}`);
+            },
+            success: function (res) {
+                localStorage.clear();
+                alert("정상적으로 탈퇴 되었습니다.");
+                window.location.href = "index.html";
+            },
+            error: function (err) {
+                if (isCallback) {
+                    console.error(err);
+                    return;
+                }
+
+                refreshAccessToken(deleteUserBtn);
+            }
+        });
+    });
+}
+

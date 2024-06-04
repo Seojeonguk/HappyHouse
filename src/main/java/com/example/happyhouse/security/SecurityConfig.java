@@ -25,7 +25,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    private final String[] allowedUrls = {"/", "/resources/**", "/api/user/signUp", "/api/user/login", "/api/third/getGoogleApiKey", "api/file/**"};
+    private final String[] allowedUrls = {"/", "/resources/**", "/api/user/signUp", "/api/user/login", "/api/user/refresh", "/api/third/getGoogleApiKey", "api/file/**"};
     private final String[] staticUrls = {"/**.html", "/data/**", "/images/**", "/lib/**", "scripts/**", "styles/**"};
 
     @Bean

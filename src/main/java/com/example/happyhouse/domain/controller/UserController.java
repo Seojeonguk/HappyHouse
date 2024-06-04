@@ -1,6 +1,7 @@
 package com.example.happyhouse.domain.controller;
 
 import com.example.happyhouse.domain.dto.request.LoginReq;
+import com.example.happyhouse.domain.dto.request.RefreshReq;
 import com.example.happyhouse.domain.dto.request.UserRegistrationReq;
 import com.example.happyhouse.domain.dto.response.TokenRes;
 import com.example.happyhouse.domain.dto.response.UserInfoRes;
@@ -10,10 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,5 +34,16 @@ public class UserController {
     @PostMapping("/me")
     public ResponseEntity<UserInfoRes> getMyInfo(Authentication authentication) {
         return ResponseEntity.ok().body(userService.getMyInfo(authentication));
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<Void> deleteUser(Authentication authentication) {
+        userService.deleteUser(authentication);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenRes> refreshToken(@RequestBody RefreshReq refreshReq) {
+        return ResponseEntity.ok().body(userService.refresh(refreshReq));
     }
 }
