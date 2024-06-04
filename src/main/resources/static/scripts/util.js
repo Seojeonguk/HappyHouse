@@ -113,3 +113,28 @@ function createHeaderBtn(id, href, event, parent, iconName, html) {
 
     return btn;
 }
+
+function refreshAccessToken(callback) {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (isEmpty(refreshToken)) {
+        return;
+    }
+
+    $.ajax({
+        url: `/api/user/refresh`,
+        type: "POST",
+        data: JSON.stringify({refreshToken}),
+        contentType: "application/json",
+        success: function (res) {
+            const {accessToken, refreshToken} = res;
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", refreshToken);
+            callback(true);
+        },
+        error: function (err) {
+            console.error("Failed to refresh token", err);
+            alert("Session expired. Please log in again.");
+            window.location.href = "login.html";
+        }
+    });
+}
