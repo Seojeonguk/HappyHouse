@@ -17,4 +17,6 @@ public interface UserService {
     void deleteUser(Authentication authentication);
 
     TokenRes refresh(RefreshReq refreshReq);
+
+    void modifyUser(Authentication authentication, UserRegistrationReq userRegistrationReq);
 }

@@ -95,4 +95,13 @@ public class UserServiceImpl implements UserService {
 
         return jwt.generateToken(usernamePasswordAuthenticationToken);
     }
+
+    @Override
+    @Transactional
+    public void modifyUser(Authentication authentication, UserRegistrationReq userRegistrationReq) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getDetails();
+        User user = customUserDetails.getUser();
+        user.updateUser(userRegistrationReq);
+        userRepository.save(user);
+    }
 }

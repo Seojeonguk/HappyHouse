@@ -46,4 +46,10 @@ public class UserController {
     public ResponseEntity<TokenRes> refreshToken(@RequestBody RefreshReq refreshReq) {
         return ResponseEntity.ok().body(userService.refresh(refreshReq));
     }
+
+    @PutMapping()
+    public ResponseEntity<Void> modifyUser(Authentication authentication, @RequestBody UserRegistrationReq userRegistrationReq) {
+        userService.modifyUser(authentication, userRegistrationReq);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
