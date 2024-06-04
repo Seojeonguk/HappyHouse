@@ -1,6 +1,7 @@
 package com.example.happyhouse.security;
 
 import com.example.happyhouse.domain.entity.User;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,12 +13,13 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
+    @Getter
     private final User user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<String> roles = new ArrayList<>();
-        roles.add("ROLE_" + user.getRole().toString());
+        roles.add(user.getRole().toString());
 
         return roles.stream()
                 .map(SimpleGrantedAuthority::new)
