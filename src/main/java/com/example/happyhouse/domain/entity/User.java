@@ -1,5 +1,6 @@
 package com.example.happyhouse.domain.entity;
 
+import com.example.happyhouse.domain.dto.request.UserRegistrationReq;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -61,6 +62,12 @@ public class User {
 
     public void updatePassword(PasswordEncoder passwordEncoder) {
         this.pw = passwordEncoder.encode(pw);
+    }
+
+    public void updateUser(UserRegistrationReq userRegistrationReq) {
+        this.name = userRegistrationReq.getName();
+        this.tel = userRegistrationReq.getTel();
+        this.addr = userRegistrationReq.getAddr();
     }
 
     public boolean matchPassword(PasswordEncoder passwordEncoder, String password) {
