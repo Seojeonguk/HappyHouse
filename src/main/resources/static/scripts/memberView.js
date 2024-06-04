@@ -1,12 +1,8 @@
 $(function () {
     setHeader();
     getMyInfo();
+    closeBtn();
     deleteUserBtn();
-
-    // 확인버튼
-    $("#btnClose").on("click", function () {
-        window.location.href = "index.html";
-    });
 
     // 수정버튼
     $("#btnChange").on("click", function () {
@@ -84,3 +80,8 @@ function deleteUserBtn(isCallback = false) {
     });
 }
 
+function closeBtn() {
+    $("#btnClose").on("click", function () {
+        window.location.href = "index.html";
+    });
+}
