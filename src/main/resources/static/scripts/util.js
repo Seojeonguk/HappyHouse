@@ -96,7 +96,7 @@ function setHeader() {
     const accessToken = localStorage.getItem("accessToken");
     if (isEmpty(accessToken)) {
         createHeaderBtn("nav-signupBtn", "signupForm.html", null, btnZone, "fa-user", "Sign up");
-        createHeaderBtn("nav-loginBtn", "loginForm.html", null, btnZone, "fa-lock", "Login");
+        createHeaderBtn("nav-loginBtn", "login.html", null, btnZone, "fa-lock", "Login");
     } else {
         createHeaderBtn("nav-infoBtn", "memberView.html", null, btnZone, "fa-user", "회원정보");
         createHeaderBtn("nav-logoutBtn", "login.html", null, btnZone, "fa-unlock", "Logout").on('click', function () {
