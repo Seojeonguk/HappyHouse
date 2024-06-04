@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    setHeader();
 
     $("#joinBtn").on("click", function () {
         const id = $("#id").val();
