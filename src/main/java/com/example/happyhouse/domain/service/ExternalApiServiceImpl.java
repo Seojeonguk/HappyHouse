@@ -14,6 +14,7 @@ import com.example.happyhouse.domain.repository.ApartmentBaseRepository;
 import com.example.happyhouse.domain.repository.ApartmentDetailRepository;
 import com.example.happyhouse.domain.repository.ApartmentRepository;
 import com.example.happyhouse.domain.repository.GeocodingRepository;
+import com.example.happyhouse.util.Fetch;
 import com.example.happyhouse.util.Parsing;
 import com.example.happyhouse.util.Util;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Element;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -71,6 +68,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     private final GeocodingRepository geocodingRepository;
 
     @Override
+    @Transactional
     public GeocodingRes getGeocoding(String address) throws IOException {
         Optional<Geocoding> geocoding = geocodingRepository.findByAddress(address);
         if (geocoding.isPresent()) {
@@ -82,23 +80,11 @@ public class ExternalApiServiceImpl implements ExternalApiService {
                 "&key=" + externalGoogleKey +
                 "&language=ko";
 
-        String response = fetchDataFromAPI(url);
+        String response = Fetch.fetchDataFromAPI(url);
+        Geocoding parsingGeocoding = parseGeocodingResponse(response,address);
+        geocodingRepository.save(parsingGeocoding);
 
-        JSONObject jsonResponse = new JSONObject(response);
-        JSONObject firstResult = jsonResponse.getJSONArray("results").getJSONObject(0);
-
-        JSONObject location = firstResult
-                .getJSONObject("geometry")
-                .getJSONObject("location");
-
-        String formattedAddress = firstResult.getString("formatted_address");
-        String lat = String.valueOf(location.getBigDecimal("lat"));
-        String lng = String.valueOf(location.getBigDecimal("lng"));
-
-        Geocoding geocoding1 = new Geocoding(address, lat, lng, formattedAddress);
-        geocodingRepository.save(geocoding1);
-
-        return geocoding1.toResponse();
+        return parsingGeocoding.toResponse();
     }
 
     @Override
@@ -151,7 +137,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
                     "&sigunguCode=" + tradeReq.getLegalCode().substring(0, 5) +
                     "&numOfRows=10000";
 
-            String response = fetchDataFromAPI(url);
+            String response = Fetch.fetchDataFromAPI(url);
             List<Element> items = Parsing.parseXmlResponse(response);
             apartments = items.stream().map(Apartment::new).toList();
             apartmentRepository.saveAll(apartments);
@@ -191,39 +177,12 @@ public class ExternalApiServiceImpl implements ExternalApiService {
                 "?serviceKey=" + externalDataKey +
                 "&kaptCode=" + complexCode;
 
-        String response = fetchDataFromAPI(url);
+        String response = Fetch.fetchDataFromAPI(url);
         List<Element> items = Parsing.parseXmlResponse(response);
         apartmentDetailInformations = items.stream().map(ApartmentDetailInformation::new).toList();
         apartmentDetailRepository.saveAll(apartmentDetailInformations);
 
         return new ApartmentDetailInfoRes(apartmentDetailInformations.get(0));
-    }
-
-
-    private String fetchDataFromAPI(String path) throws IOException {
-        URL url = new URL(path);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Content-type", "application/json");
-
-        log.info(path);
-
-        BufferedReader rd;
-        if (conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
-            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        } else {
-            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-        }
-
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = rd.readLine()) != null) {
-            sb.append(line);
-        }
-        rd.close();
-        conn.disconnect();
-
-        return sb.toString();
     }
 
     private List<TradeRes> fetchTradeData(String category, String legalCode, String endPoint, String searchDate, String si) throws IOException {
@@ -232,7 +191,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
                 "&LAWD_CD=" + legalCode.substring(0, 5) +
                 "&DEAL_YMD=" + searchDate;
 
-        String response = fetchDataFromAPI(url);
+        String response = Fetch.fetchDataFromAPI(url);
         List<Element> items = Parsing.parseXmlResponse(response);
         List<TradeRes> trades = items.stream().map(item -> new TradeRes(item, category)).toList();
         for (TradeRes trade : trades) {
@@ -267,7 +226,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
                 "?serviceKey=" + externalDataKey +
                 "&kaptCode=" + complexCode;
 
-        String response = fetchDataFromAPI(url);
+        String response = Fetch.fetchDataFromAPI(url);
         List<Element> items = Parsing.parseXmlResponse(response);
         apartmentBaseInformations = items.stream().map(ApartmentBaseInformation::new).toList();
         apartmentBaseRepository.saveAll(apartmentBaseInformations);
@@ -297,11 +256,26 @@ public class ExternalApiServiceImpl implements ExternalApiService {
                 "?serviceKey=" + externalDataKey +
                 "&kaptCode=" + complexCode;
 
-        String response = fetchDataFromAPI(url);
+        String response = Fetch.fetchDataFromAPI(url);
         List<Element> items = Parsing.parseXmlResponse(response);
         apartmentDetailInformations = items.stream().map(ApartmentDetailInformation::new).toList();
         apartmentDetailRepository.saveAll(apartmentDetailInformations);
 
         return apartmentDetailInformations;
+    }
+
+    private Geocoding parseGeocodingResponse(String response, String address) {
+        JSONObject jsonResponse = new JSONObject(response);
+        JSONObject firstResult = jsonResponse.getJSONArray("results").getJSONObject(0);
+
+        JSONObject location = firstResult
+                .getJSONObject("geometry")
+                .getJSONObject("location");
+
+        String formattedAddress = firstResult.getString("formatted_address");
+        String lat = String.valueOf(location.getBigDecimal("lat"));
+        String lng = String.valueOf(location.getBigDecimal("lng"));
+
+        return new Geocoding(address, lat, lng, formattedAddress);
     }
 }
