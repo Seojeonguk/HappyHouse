@@ -155,6 +155,7 @@ function getInformation({category, legalCode, si, year, month}) {
             si
         }),
         beforeSend: function (xhr) {
+            $(".spinner-div").removeClass("hide");
             const accessToken = localStorage.getItem("accessToken");
             const grantType = localStorage.getItem("grantType");
             if (isEmpty(grantType)) {
@@ -201,6 +202,9 @@ function getInformation({category, legalCode, si, year, month}) {
         },
         error: function (err) {
             console.error(err);
+        },
+        complete: function () {
+            $(".spinner-div").addClass("hide");
         }
     })
 }
