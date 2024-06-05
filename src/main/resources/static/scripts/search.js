@@ -3,10 +3,7 @@ $(document).ready(async function () {
 
     setHeader();
     initSearchForm(params);
-    loadGoogleMap();
-
-    const coordinate = await getCoordinate(`${params.si} ${params.gu} ${params.dong}`);
-    await initMap(coordinate.lat, coordinate.lng);
+    loadGoogleMap(false,params);
 
     //getTrade(params);
     getInformation(params);
