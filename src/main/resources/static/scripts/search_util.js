@@ -154,6 +154,14 @@ function getInformation({category, legalCode, si, year, month}) {
             month,
             si
         }),
+        beforeSend: function (xhr) {
+            const accessToken = localStorage.getItem("accessToken");
+            const grantType = localStorage.getItem("grantType");
+            if (isEmpty(grantType)) {
+                return;
+            }
+            xhr.setRequestHeader("Authorization", `${grantType} ${accessToken}`);
+        },
         success: function (response) {
             console.log(response);
             $.each(response, async function (idx, res) {
@@ -205,6 +213,14 @@ function getDetailInformation(complexCode, res) {
         data: JSON.stringify({
             complexCode
         }),
+        beforeSend: function (xhr) {
+            const accessToken = localStorage.getItem("accessToken");
+            const grantType = localStorage.getItem("grantType");
+            if (isEmpty(grantType)) {
+                return;
+            }
+            xhr.setRequestHeader("Authorization", `${grantType} ${accessToken}`);
+        },
         success: function (response) {
             console.log(response);
             showDetailInformation(response, res);

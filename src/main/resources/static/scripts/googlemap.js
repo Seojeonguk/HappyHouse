@@ -1,19 +1,39 @@
 let map;
 
-function loadGoogleMap() {
+function loadGoogleMap(isCallback = false, params = {}) {
 
     $.ajax({
         url: '/api/third/getGoogleApiKey',
         type: "POST",
+        beforeSend: function (xhr) {
+            const accessToken = localStorage.getItem("accessToken");
+            const grantType = localStorage.getItem("grantType");
+            if (isEmpty(grantType)) {
+                return;
+            }
+            xhr.setRequestHeader("Authorization", `${grantType} ${accessToken}`);
+        },
         success: function (key) {
             let script = document.createElement('script');
             script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap&loading=async`;
             script.async = true;
 
+            if (!isEmpty(params)) {
+                script.onload = async function () {
+                    const coordinate = await getCoordinate(`${params.si} ${params.gu} ${params.dong}`);
+                    await initMap(coordinate.lat, coordinate.lng);
+                }
+            }
+
             document.head.appendChild(script);
         },
         error: function (err) {
-            console.error(err);
+            if (isCallback) {
+                console.error(err);
+                return;
+            }
+
+            refreshAccessToken(loadGoogleMap);
         }
     });
 }
@@ -56,6 +76,14 @@ function getCoordinate(address) {
         $.ajax({
             url: `/api/third/google/geocoding?address=${address}`,
             type: "GET",
+            beforeSend: function (xhr) {
+                const accessToken = localStorage.getItem("accessToken");
+                const grantType = localStorage.getItem("grantType");
+                if (isEmpty(grantType)) {
+                    return;
+                }
+                xhr.setRequestHeader("Authorization", `${grantType} ${accessToken}`);
+            },
             success: function (coordinate) {
                 resolve(coordinate);
             },
