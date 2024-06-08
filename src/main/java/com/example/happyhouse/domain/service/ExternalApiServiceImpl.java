@@ -90,6 +90,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         return googleKey;
     }
 
+    @Transactional
     @Override
     public List<TradeRes> getTrade(TradeReq tradeReq) throws IOException {
         List<TradeRes> tradeList = new ArrayList<>();
@@ -151,15 +152,12 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
         List<String> complexCodes = apartments.stream().map(Apartment::getComplexCode).toList();
         List<ApartmentBaseInfoRes> apartmentBaseInfoResList = getBaseInfo(complexCodes).stream().map(ApartmentBaseInfoRes::new).toList();
-        apartmentBaseInfoResList.forEach(apartmentBaseInfoRes -> {
+
+        for (ApartmentBaseInfoRes apartmentBaseInfoRes : apartmentBaseInfoResList) {
             String address = Util.removeSuffix(apartmentBaseInfoRes.getLegalDongAddress(), apartmentBaseInfoRes.getComplexName());
-            try {
-                GeocodingRes geocodingRes = getGeocoding(address);
-                apartmentBaseInfoRes.setGeoCodingRes(geocodingRes);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+            GeocodingRes geocodingRes = getGeocoding(address);
+            apartmentBaseInfoRes.setGeoCodingRes(geocodingRes);
+        }
 
         return apartmentBaseInfoResList;
     }
@@ -176,7 +174,8 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         return new ApartmentDetailInfoRes(aptDetailInfo.getFirst());
     }
 
-    private List<TradeRes> fetchTradeData(String category, String legalCode, String endPoint, String searchDate, String si) throws IOException {
+    @Transactional
+    public List<TradeRes> fetchTradeData(String category, String legalCode, String endPoint, String searchDate, String si) throws IOException {
         String url = endPoint +
                 "?serviceKey=" + dataKey +
                 "&LAWD_CD=" + legalCode.substring(0, 5) +
