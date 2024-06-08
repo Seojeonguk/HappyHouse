@@ -217,21 +217,14 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     }
 
     private List<ApartmentBaseInformation> getApartmentBaseInformation(String complexCode) throws IOException {
-        List<ApartmentBaseInformation> apartmentBaseInformations = apartmentBaseRepository.findByComplexCode(complexCode);
-        if (!apartmentBaseInformations.isEmpty()) {
-            return apartmentBaseInformations;
-        }
-
-        String url = externalDataAptInfoBaseEndpoint +
-                "?serviceKey=" + externalDataKey +
-                "&kaptCode=" + complexCode;
-
-        String response = Fetch.fetchDataFromAPI(url);
-        List<Element> items = Parsing.parseXmlResponse(response);
-        apartmentBaseInformations = items.stream().map(ApartmentBaseInformation::new).toList();
-        apartmentBaseRepository.saveAll(apartmentBaseInformations);
-
-        return apartmentBaseInformations;
+        return Fetch.fetchApartmentInformation(
+                complexCode,
+                apartmentBaseRepository::findByComplexCode,
+                externalDataAptInfoBaseEndpoint,
+                externalDataKey,
+                ApartmentBaseInformation::new,
+                apartmentBaseRepository::saveAll
+        );
     }
 
     private List<ApartmentDetailInformation> getApartmentDetailInformations(List<String> complexCodes) throws IOException {
@@ -247,21 +240,14 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     }
 
     private List<ApartmentDetailInformation> getApartmentDetailInformation(String complexCode) throws IOException {
-        List<ApartmentDetailInformation> apartmentDetailInformations = apartmentDetailRepository.findByComplexCode(complexCode);
-        if (!apartmentDetailInformations.isEmpty()) {
-            return apartmentDetailInformations;
-        }
-
-        String url = externalDataAptInfoDetailEndpoint +
-                "?serviceKey=" + externalDataKey +
-                "&kaptCode=" + complexCode;
-
-        String response = Fetch.fetchDataFromAPI(url);
-        List<Element> items = Parsing.parseXmlResponse(response);
-        apartmentDetailInformations = items.stream().map(ApartmentDetailInformation::new).toList();
-        apartmentDetailRepository.saveAll(apartmentDetailInformations);
-
-        return apartmentDetailInformations;
+        return Fetch.fetchApartmentInformation(
+                complexCode,
+                apartmentDetailRepository::findByComplexCode,
+                externalDataAptInfoDetailEndpoint,
+                externalDataKey,
+                ApartmentDetailInformation::new,
+                apartmentDetailRepository::saveAll
+        );
     }
 
     private Geocoding parseGeocodingResponse(String response, String address) {
