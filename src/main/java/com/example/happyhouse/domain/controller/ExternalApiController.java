@@ -37,12 +37,12 @@ public class ExternalApiController {
     }
 
     @PostMapping("/getInformation")
-    public ResponseEntity<List<ApartmentBaseInfoRes>> getInformation(@RequestBody TradeReq tradeReq) throws IOException {
-        return ResponseEntity.ok(externalApiService.getInformation(tradeReq));
+    public ResponseEntity<List<ApartmentBaseInfoRes>> getBaseInfo(@RequestBody TradeReq tradeReq) throws IOException {
+        return ResponseEntity.ok(externalApiService.getBaseInfo(tradeReq));
     }
 
     @PostMapping("/getDetailInformation")
-    public ResponseEntity<ApartmentDetailInfoRes> getDetailInformation(@RequestBody ApartmentDetailInfoReq apartmentDetailInfoReq) throws IOException {
-        return ResponseEntity.ok(externalApiService.getDetailInformation(apartmentDetailInfoReq));
+    public ResponseEntity<ApartmentDetailInfoRes> getDetailInfo(@RequestBody ApartmentDetailInfoReq apartmentDetailInfoReq) throws IOException {
+        return ResponseEntity.ok(externalApiService.getDetailInfo(apartmentDetailInfoReq));
     }
 }
