@@ -37,18 +37,16 @@ public class Fetch {
         return sb.toString();
     }
 
-    public static <T> List<T> fetchApartmentInformation(String complexCode,
+    public static <T> List<T> fetchApartmentInformation(String condition,
                                                         Function<String, List<T>> fetchFromRepo,
-                                                        String endpoint,
-                                                        String serviceKey,
+                                                        String url,
                                                         Function<Element, T> mapToEntity,
                                                         Function<List<T>, List<T>> saveToRepo) throws IOException {
-        List<T> information = fetchFromRepo.apply(complexCode);
+        List<T> information = fetchFromRepo.apply(condition);
         if (!information.isEmpty()) {
             return information;
         }
 
-        String url = endpoint + "?serviceKey=" + serviceKey + "&kaptCode=" + complexCode;
         String response = Fetch.fetchDataFromAPI(url);
         List<Element> items = Parsing.parseXmlResponse(response);
         information = items.stream().map(mapToEntity).collect(Collectors.toList());

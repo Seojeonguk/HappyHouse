@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface GeocodingRepository extends JpaRepository<Geocoding, Long> {
-    Optional<Geocoding> findByAddress(String address);
+    Geocoding findByAddress(String address);
 }

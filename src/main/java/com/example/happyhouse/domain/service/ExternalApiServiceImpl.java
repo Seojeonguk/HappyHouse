@@ -30,8 +30,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -39,28 +37,28 @@ import java.util.stream.Collectors;
 public class ExternalApiServiceImpl implements ExternalApiService {
 
     @Value("${external.google.key}")
-    private String externalGoogleKey;
+    private String googleKey;
 
     @Value("${external.google.geocoding.endpoint}")
-    private String externalGoogleGeocodingEndpoint;
+    private String geocodingEndpoint;
 
     @Value("${external.data.key}")
-    private String externalDataKey;
+    private String dataKey;
 
     @Value("${external.data.apt-trade.endpoint}")
-    private String externalDataAptTradeEndpoint;
+    private String aptTradeEndpoint;
 
     @Value("${external.data.house-trade.endpoint}")
-    private String externalDataHouseTradeEndpoint;
+    private String houseTradeEndpoint;
 
     @Value("${external.data.apt-list.sigungu.endpoint}")
-    private String externalDataAptListSigunguEndpoint;
+    private String aptSigunguEndpoint;
 
     @Value("${external.data.apt-info.base.endpoint}")
-    private String externalDataAptInfoBaseEndpoint;
+    private String aptBaseInfoEndpoint;
 
     @Value("${external.data.apt-info.detail.endpoint}")
-    private String externalDataAptInfoDetailEndpoint;
+    private String aptDetailInfoEndpoint;
 
     private final ApartmentRepository apartmentRepository;
     private final ApartmentBaseRepository apartmentBaseRepository;
@@ -70,18 +68,18 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     @Override
     @Transactional
     public GeocodingRes getGeocoding(String address) throws IOException {
-        Optional<Geocoding> geocoding = geocodingRepository.findByAddress(address);
-        if (geocoding.isPresent()) {
-            return geocoding.get().toResponse();
+        Geocoding geocoding = geocodingRepository.findByAddress(address);
+        if (!Util.isEmpty(geocoding)) {
+            return geocoding.toResponse();
         }
 
-        String url = externalGoogleGeocodingEndpoint + "/json" +
+        String url = geocodingEndpoint + "/json" +
                 "?address=" + address.replaceAll(" ", "+") +
-                "&key=" + externalGoogleKey +
+                "&key=" + googleKey +
                 "&language=ko";
 
         String response = Fetch.fetchDataFromAPI(url);
-        Geocoding parsingGeocoding = parseGeocodingResponse(response,address);
+        Geocoding parsingGeocoding = parseGeocodingResponse(response, address);
         geocodingRepository.save(parsingGeocoding);
 
         return parsingGeocoding.toResponse();
@@ -89,7 +87,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
     @Override
     public String getGoogleApiKey() {
-        return externalGoogleKey;
+        return googleKey;
     }
 
     @Override
@@ -106,22 +104,25 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
         String category = tradeReq.getCategory();
         String legalCode = tradeReq.getLegalCode();
-        if ("전체".equals(category)) {
-            List<TradeRes> houseTrades = fetchTradeData("연립다세대", legalCode, externalDataHouseTradeEndpoint, searchDate, tradeReq.getSi());
-            List<TradeRes> apartTrades = fetchTradeData("아파트", legalCode, externalDataAptTradeEndpoint, searchDate, tradeReq.getSi());
+        switch (category) {
+            case "전체" -> {
+                List<TradeRes> houseTrades = fetchTradeData("연립다세대", legalCode, houseTradeEndpoint, searchDate, tradeReq.getSi());
+                List<TradeRes> apartTrades = fetchTradeData("아파트", legalCode, aptTradeEndpoint, searchDate, tradeReq.getSi());
 
-            tradeList.addAll(houseTrades);
-            tradeList.addAll(apartTrades);
-        } else if ("아파트".equals(category)) {
-            List<TradeRes> apartTrades = fetchTradeData("아파트", legalCode, externalDataAptTradeEndpoint, searchDate, tradeReq.getSi());
+                tradeList.addAll(houseTrades);
+                tradeList.addAll(apartTrades);
+            }
+            case "아파트" -> {
+                List<TradeRes> apartTrades = fetchTradeData("아파트", legalCode, aptTradeEndpoint, searchDate, tradeReq.getSi());
 
-            tradeList.addAll(apartTrades);
-        } else if ("연립다세대".equals(category)) {
-            List<TradeRes> houseTrades = fetchTradeData("연립다세대", legalCode, externalDataHouseTradeEndpoint, searchDate, tradeReq.getSi());
+                tradeList.addAll(apartTrades);
+            }
+            case "연립다세대" -> {
+                List<TradeRes> houseTrades = fetchTradeData("연립다세대", legalCode, houseTradeEndpoint, searchDate, tradeReq.getSi());
 
-            tradeList.addAll(houseTrades);
-        } else {
-            log.warn("Not support category: {}", category);
+                tradeList.addAll(houseTrades);
+            }
+            case null, default -> log.warn("Not support category: {}", category);
         }
 
         return tradeList;
@@ -129,33 +130,31 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
     @Override
     @Transactional
-    public List<ApartmentBaseInfoRes> getInformation(TradeReq tradeReq) throws IOException {
-        List<Apartment> apartments = apartmentRepository.findByLegalDongCodeStartingWith(tradeReq.getLegalCode().substring(0, 5));
-        if (apartments.isEmpty()) {
-            String url = externalDataAptListSigunguEndpoint +
-                    "?serviceKey=" + externalDataKey +
-                    "&sigunguCode=" + tradeReq.getLegalCode().substring(0, 5) +
-                    "&numOfRows=10000";
+    public List<ApartmentBaseInfoRes> getBaseInfo(TradeReq tradeReq) throws IOException {
+        String url = aptSigunguEndpoint +
+                "?serviceKey=" + dataKey +
+                "&sigunguCode=" + tradeReq.getLegalCode().substring(0, 5) +
+                "&numOfRows=10000";
 
-            String response = Fetch.fetchDataFromAPI(url);
-            List<Element> items = Parsing.parseXmlResponse(response);
-            apartments = items.stream().map(Apartment::new).toList();
-            apartmentRepository.saveAll(apartments);
-        }
+        List<Apartment> apartments = Fetch.fetchApartmentInformation(
+                tradeReq.getLegalCode().substring(0, 5),
+                apartmentRepository::findByLegalDongCodeStartingWith,
+                url,
+                Apartment::new,
+                apartmentRepository::saveAll
+        );
+
 
         if (apartments.isEmpty()) {
             return List.of();
         }
 
         List<String> complexCodes = apartments.stream().map(Apartment::getComplexCode).toList();
-        List<ApartmentBaseInformation> apartmentBaseInformations = getApartmentBaseInformations(complexCodes);
-
-        List<ApartmentBaseInfoRes> apartmentBaseInfoResList = apartmentBaseInformations.stream().map(ApartmentBaseInfoRes::new).toList();
+        List<ApartmentBaseInfoRes> apartmentBaseInfoResList = getBaseInfo(complexCodes).stream().map(ApartmentBaseInfoRes::new).toList();
         apartmentBaseInfoResList.forEach(apartmentBaseInfoRes -> {
-            GeocodingRes geocodingRes = null;
+            String address = Util.removeSuffix(apartmentBaseInfoRes.getLegalDongAddress(), apartmentBaseInfoRes.getComplexName());
             try {
-                String address = Util.removeSuffix(apartmentBaseInfoRes.getLegalDongAddress(), apartmentBaseInfoRes.getComplexName());
-                geocodingRes = getGeocoding(address);
+                GeocodingRes geocodingRes = getGeocoding(address);
                 apartmentBaseInfoRes.setGeoCodingRes(geocodingRes);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -166,28 +165,20 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     }
 
     @Override
-    public ApartmentDetailInfoRes getDetailInformation(ApartmentDetailInfoReq apartmentDetailInfoReq) throws IOException {
+    public ApartmentDetailInfoRes getDetailInfo(ApartmentDetailInfoReq apartmentDetailInfoReq) throws IOException {
         String complexCode = apartmentDetailInfoReq.getComplexCode();
-        List<ApartmentDetailInformation> apartmentDetailInformations = apartmentDetailRepository.findByComplexCode(complexCode);
-        if (!apartmentDetailInformations.isEmpty()) {
-            return new ApartmentDetailInfoRes(apartmentDetailInformations.get(0));
+        if (Util.isEmpty(complexCode)) {
+            throw new IllegalArgumentException("Complex code is empty");
         }
 
-        String url = externalDataAptInfoDetailEndpoint +
-                "?serviceKey=" + externalDataKey +
-                "&kaptCode=" + complexCode;
+        List<ApartmentDetailInformation> aptDetailInfo = getDetailInfo(complexCode);
 
-        String response = Fetch.fetchDataFromAPI(url);
-        List<Element> items = Parsing.parseXmlResponse(response);
-        apartmentDetailInformations = items.stream().map(ApartmentDetailInformation::new).toList();
-        apartmentDetailRepository.saveAll(apartmentDetailInformations);
-
-        return new ApartmentDetailInfoRes(apartmentDetailInformations.get(0));
+        return new ApartmentDetailInfoRes(aptDetailInfo.getFirst());
     }
 
     private List<TradeRes> fetchTradeData(String category, String legalCode, String endPoint, String searchDate, String si) throws IOException {
         String url = endPoint +
-                "?serviceKey=" + externalDataKey +
+                "?serviceKey=" + dataKey +
                 "&LAWD_CD=" + legalCode.substring(0, 5) +
                 "&DEAL_YMD=" + searchDate;
 
@@ -204,47 +195,31 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         return trades;
     }
 
-    private List<ApartmentBaseInformation> getApartmentBaseInformations(List<String> complexCodes) throws IOException {
-        return complexCodes.stream()
-                .flatMap(complexCode -> {
-                    try {
-                        return getApartmentBaseInformation(complexCode).stream();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .collect(Collectors.toList());
+    private List<ApartmentBaseInformation> getBaseInfo(List<String> complexCodes) throws IOException {
+        List<ApartmentBaseInformation> baseInfo = new ArrayList<>();
+        for (String complexCode : complexCodes) {
+            baseInfo.addAll(getBaseInfo(complexCode));
+        }
+        return baseInfo;
     }
 
-    private List<ApartmentBaseInformation> getApartmentBaseInformation(String complexCode) throws IOException {
+    private List<ApartmentBaseInformation> getBaseInfo(String complexCode) throws IOException {
+        String url = aptBaseInfoEndpoint + "?serviceKey=" + dataKey + "&kaptCode=" + complexCode;
         return Fetch.fetchApartmentInformation(
                 complexCode,
                 apartmentBaseRepository::findByComplexCode,
-                externalDataAptInfoBaseEndpoint,
-                externalDataKey,
+                url,
                 ApartmentBaseInformation::new,
                 apartmentBaseRepository::saveAll
         );
     }
 
-    private List<ApartmentDetailInformation> getApartmentDetailInformations(List<String> complexCodes) throws IOException {
-        return complexCodes.stream()
-                .flatMap(complexCode -> {
-                    try {
-                        return getApartmentDetailInformation(complexCode).stream();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .collect(Collectors.toList());
-    }
-
-    private List<ApartmentDetailInformation> getApartmentDetailInformation(String complexCode) throws IOException {
+    private List<ApartmentDetailInformation> getDetailInfo(String complexCode) throws IOException {
+        String url = aptDetailInfoEndpoint + "?serviceKey=" + dataKey + "&kaptCode=" + complexCode;
         return Fetch.fetchApartmentInformation(
                 complexCode,
                 apartmentDetailRepository::findByComplexCode,
-                externalDataAptInfoDetailEndpoint,
-                externalDataKey,
+                url,
                 ApartmentDetailInformation::new,
                 apartmentDetailRepository::saveAll
         );

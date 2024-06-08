@@ -17,7 +17,7 @@ public interface ExternalApiService {
 
     List<TradeRes> getTrade(TradeReq tradeReq) throws IOException;
 
-    List<ApartmentBaseInfoRes> getInformation(TradeReq tradeReq) throws IOException;
+    List<ApartmentBaseInfoRes> getBaseInfo(TradeReq tradeReq) throws IOException;
 
-    ApartmentDetailInfoRes getDetailInformation(ApartmentDetailInfoReq apartmentDetailInfoReq) throws IOException;
+    ApartmentDetailInfoRes getDetailInfo(ApartmentDetailInfoReq apartmentDetailInfoReq) throws IOException;
 }
