@@ -175,6 +175,11 @@ body {
     font-size: 1.2em;
 }
 
+.search .search-list .item a {
+    text-decoration: none;
+    color: black;
+}
+
 .search .search-list .item .infos p {
     display: inline-block;
     margin: 0;
@@ -429,4 +434,20 @@ body {
 
 @keyframes spinner-border {
     to { transform: rotate(360deg); }
+}
+
+.popover-arrow {
+    display: none;
+}
+
+.popover-body > div:nth-child(1) {
+    margin-bottom: 5px;
+}
+
+.tag {
+    border: 1px solid gray;
+    font-size: 0.725rem;
+    padding: 0 5px;
+    font-weight: bold;
+    margin-right: 5px;
 }

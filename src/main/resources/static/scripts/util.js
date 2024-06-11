@@ -74,19 +74,20 @@ function populateSelectOptions(selectId, storageKey, selectedValue) {
     return false;
 }
 
-function createIcon(name, icon, parent, isAddText) {
-    const div = $("<div></div>").addClass(name);
+function createIcon(name, icon, parent, isAddText, isAddSpan = false) {
+    const child = (isAddSpan ? $("<span></span>") : $("<div></div>")).addClass(name);
+
     $("<i></i>").attr('aria-hidden', 'true').attr('title', name)
         .addClass('fa').addClass('fa-icon').addClass(icon).addClass('fa-fw')
-        .appendTo(div);
-    $("<span></span>").addClass('sr-only').html(name).appendTo(div);
+        .appendTo(child);
+    $("<span></span>").addClass('sr-only').html(name).appendTo(child);
     if (isAddText) {
-        $("<span></span>").html(name).appendTo(div);
+        $("<span></span>").html(name).appendTo(child);
     }
 
-    div.appendTo(parent);
+    child.appendTo(parent);
 
-    return div;
+    return child;
 }
 
 function setHeader() {
