@@ -182,10 +182,27 @@ function getInformation({category, legalCode, si, year, month}) {
                 const div = $(`<div class="item"></div>`).attr('complexCode', complexCode);
                 $("<p></p>").addClass("name").text(complexName).appendTo(div);
 
-                const addr = $("<div></div>").addClass("addr");
-                $("<p></p>").addClass("legalDongAddr").text(formattedAddress).appendTo(addr);
-                $("<p></p>").addClass("roadAddr").text(roadNameAddress).appendTo(addr);
-                addr.appendTo(div);
+                const addr = $("<div></div>").appendTo(div);
+                const a = $("<a></a>")
+                    .addClass("addr")
+                    .attr('href', '#')
+                    .attr('target', '_self')
+                    .text(formattedAddress)
+                    .appendTo(addr);
+                const icon = createIcon("roadAddr", "fa-caret-down", a, false, true);
+
+                a.popover({
+                    title: '',
+                    content: `<div><span class="tag">도로명</span>${roadNameAddress}</div> <div><span class="tag">지번</span>${formattedAddress}</div>`,
+                    placement: "bottom",
+                    html: true,
+                    container: a
+                });
+
+                a.on("click", function (e) {
+                    $(icon).find("i").toggleClass("fa-caret-down").toggleClass("fa-caret-up");
+                    return false;
+                })
 
                 const infos = $("<div></div>").addClass("infos");
                 $("<p></p>").addClass("approvalDate").text(`${approvalDate.substring(0, 4)}년`).appendTo(infos);
@@ -322,7 +339,7 @@ function createDetailDiv(className, items, parent) {
         const {icon, contents} = item;
         const {name, path} = icon;
 
-        if(isEmpty(contents)) {
+        if (isEmpty(contents)) {
             return;
         }
 
