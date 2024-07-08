@@ -1,30 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<title>Happy House | 회원 정보</title>
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-		<link rel="icon" href="images/favicon.png">
+		<title>Happy House | 회원 정보 수정</title>
 
-		<script src="lib/jquery/jquery-3.7.1.min.js"></script>
+		<link rel="icon" th:href="@{/images/favicon.png}">
+
+		<!-- Jquery -->
+		<script th:src="@{/lib/jquery/jquery-3.7.1.min.js}"></script>
 
 		<!-- bootstrap -->
-		<script src="lib/bootstrap/js/bootstrap.js"></script>
-		<link href="lib/bootstrap/css/bootstrap.css" rel="stylesheet">
+		<script th:src="@{/lib/bootstrap/js/bootstrap.js}"></script>
+		<link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.css}">
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 		<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR&display=swap" rel="stylesheet">
 		<!-- Custom fonts for this template -->
-		<link href="lib/fontawesome/css/all.min.css" rel="stylesheet">
-		<link href="lib/simple-line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css">
+		<link href="../static/lib/fontawesome/css/all.min.css" rel="stylesheet">
+		<link href="../static/lib/simple-line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css">
 
 		<!-- Custom styles for this template -->
-		<link href="styles/css/landing-page.min.css" rel="stylesheet">
-		<link href="styles/css/memberView.css" rel="stylesheet">
+		<link href="../static/styles/css/landing-page.min.css" rel="stylesheet">
+		<link href="../static/styles/css/memberView.css" rel="stylesheet">
 
-		<script type="text/javascript" src="scripts/util.js"></script>
-		<script type="text/javascript" src="scripts/memberView.js"></script>
+		<script type="text/javascript" src="../static/scripts/util.js"></script>
+		<script type="text/javascript" src="../static/scripts/memberUpdate.js"></script>
 
 	</head>
 	<body>
@@ -54,9 +57,9 @@
 				<div class="container signupBg mt-4 mb-7">
 					<div class="row justify-content-center">
 						<div class="col-7 signupBox">
-							<form method="post" action="index.html">
+							<div class="form-group">
 								<div class="row mb-5 justify-content-center">
-									<h2>회원 정보 확인</h2>
+									<h2>회원 정보 수정</h2>
 								</div>
 								<div class="form-group row">
 									<label for="id">아이디
@@ -68,28 +71,24 @@
 									<label for="name">이름
 										<p>*</p>
 									</label>
-									<div class="col-md-8" id="name"></div>
+									<input type="text" class="form-control" placeholder="" required id="name"
+									       name="name">
 								</div>
 								<div class="form-group row">
 									<label for="addr">주소
 										<p>*</p>
 									</label>
-									<div class="col-md-8" id="addr"></div>
+									<input type="text" class="form-control" placeholder="" required id="addr"
+									       name="addr">
 								</div>
 								<div class="form-group row mb-4">
 									<label for="tel">전화번호
 										<p>*</p>
 									</label>
-									<div class="col-md-8" id="tel"></div>
+									<input type="text" class="form-control" placeholder="" required id="tel" name="tel">
 								</div>
-								<div class="row">
-									<div class="col btn-group">
-										<input type="button" class="btn btn-primary" id="btnClose" value="확인">
-										<input type="button" class="btn btn-primary" id="btnChange" value="수정">
-										<input type="button" class="btn btn-primary" id="btnDelete" value="탈퇴">
-									</div>
-								</div>
-							</form>
+								<input type="submit" class="btn btn-primary btn-block" id="modifyBtn" value="수정">
+							</div>
 						</div>
 					</div>
 				</div>

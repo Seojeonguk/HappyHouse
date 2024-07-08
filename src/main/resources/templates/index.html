@@ -1,41 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 	<head>
-		<meta charset="utf-8">
+		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
 		<title>Happy House</title>
 
-		<link rel="icon" href="images/favicon.png">
+		<link rel="icon" th:href="@{/images/favicon.png}">
 
 		<!-- Jquery -->
-		<script src="lib/jquery/jquery-3.7.1.min.js"></script>
+		<script th:src="@{/lib/jquery/jquery-3.7.1.min.js}"></script>
 
 		<!-- bootstrap -->
-		<script src="lib/bootstrap/js/bootstrap.js"></script>
-		<link href="lib/bootstrap/css/bootstrap.css" rel="stylesheet">
+		<script th:src="@{/lib/bootstrap/js/bootstrap.js}"></script>
+		<link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.css}">
 
 		<!-- Custom fonts for this template -->
-		<link href="lib/fontawesome/css/all.min.css" rel="stylesheet">
-		<link href="lib/simple-line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" th:href="@{/lib/fontawesome/css/all.min.css}">
+		<link rel="stylesheet" type="text/css" th:href="@{/lib/simple-line-icons/css/simple-line-icons.css}" }>
 		<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic"
 		      rel="stylesheet" type="text/css">
 
 		<!-- Custom styles for this template -->
-		<link href="styles/css/landing-page.min.css" rel="stylesheet">
-		<link href="styles/css/index.css" rel="stylesheet">
+		<link rel="stylesheet" th:href="@{/styles/css/landing-page.min.css}">
+		<link rel="stylesheet" th:href="@{/styles/css/index.css}">
 
 		<!-- Scripts-->
-		<script src="scripts/util.js"></script>
-		<script src="scripts/googlemap.js"></script>
-		<script src="scripts/search_util.js"></script>
-		<script src="scripts/index.js"></script>
+		<script src="../static/scripts/util.js" th:src="@{/scripts/util.js}"></script>
+		<script src="../static/scripts/googlemap.js" th:src="@{/scripts/googlemap.js}"></script>
+		<script src="../static/scripts/search_util.js" th:src="@{/scripts/search_util.js}"></script>
+		<script src="../static/scripts/index.js" th:src="@{/scripts/index.js}"></script>
 	</head>
 	<body>
 		<div class="wrap">
 			<div class="header">
 				<nav class="navbar">
 					<div class="container">
-						<a class="navbar-brand" href="index.html">
+						<a class="navbar-brand" href="/index" th:href="@{/index}">
 							<i class="fa fa-home"></i>
 							Happy House
 						</a>
@@ -88,21 +90,24 @@
 					<div class="row">
 						<div class="col-lg-4">
 							<div class="testimonial-item mx-auto mb-5 mb-lg-0">
-								<img class="img-fluid rounded-circle mb-3" src="./images/apartment.jpg" alt="">
+								<img class="img-fluid rounded-circle mb-3" src="../static/images/apartment.jpg" alt=""
+								     th:src="@{/images/apartment.jpg}">
 								<h5>주택 실거래가 정보 수집</h5>
 								<p class="font-weight-light mb-0">"국토교통부 : 실시간 실거래가를 얻어와 화면에 출력."</p>
 							</div>
 						</div>
 						<div class="col-lg-4">
 							<div class="testimonial-item mx-auto mb-5 mb-lg-0">
-								<img class="img-fluid rounded-circle mb-3" src="./images/house_1.jpg" alt="">
+								<img class="img-fluid rounded-circle mb-3" src="../static/images/house_1.jpg" alt=""
+								     th:src="@{/images/house_1.jpg}">
 								<h5>주택 실거래가 검색</h5>
 								<p class="font-weight-light mb-0">"주택 실거래가 정보를 원하는 검색 정보에 따라 검색 결과 데이터 제공."</p>
 							</div>
 						</div>
 						<div class="col-lg-4">
 							<div class="testimonial-item mx-auto mb-5 mb-lg-0">
-								<img class="img-fluid rounded-circle mb-3" src="./images/purchase.jpg" alt="">
+								<img class="img-fluid rounded-circle mb-3" src="../static/images/purchase.jpg" alt=""
+								     th:src="@{/images/purchase.jpg}">
 								<h5>회원 가입 서비스</h5>
 								<p class="font-weight-light mb-0">"로그인과 회원정보 조회, 수정 가능!"</p>
 							</div>
